@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+
+    <title>Promise example</title>
+
+    <link rel="stylesheet" href="">
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <h1>Promise example</h1>
+
+    <p>Darth Vader image by <a href="https://www.flickr.com/photos/digital_stability/">Shawn Taylor</a>, published under a <a href="https://creativecommons.org/licenses/by-nc-nd/2.0/">Attribution-NonCommercial-NoDerivs 2.0 Generic</a> license.</p>
+  </body>
+
+  <script>
+
+	function imgLoad(url) {
+	  return new Promise(function(resolve, reject) {	  
+	    var request = new XMLHttpRequest();
+      request.open('GET', url);
+      request.responseType = 'blob';
+      
+      request.onload = function() {
+  	    if (request.status == 200) {
+  	      resolve(request.response);
+  	    } else {
+  	      reject(Error('Image didn\'t load successfully; error code:' + request.statusText));
+  	    }
+      };
+
+	    request.onerror = function() {
+          reject(Error('There was a network error.'));
+      };
+
+      request.send();
+	  });
+	};
+    
+  var body = document.querySelector('body');
+  var myImage = new Image();
+
+	imgLoad('myLittleVader.jpg').then(function(response) {
+	  myImage.src = response;
+      body.appendChild(myImage);
+	}, function(Error) {
+	  console.log(Error);
+	});
+
+  </script>
+</html>
