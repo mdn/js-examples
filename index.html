@@ -33,7 +33,7 @@
 
       // When the request loads, check whether it was successful
       request.onload = function() {
-        if (request.status == 200) {
+        if (request.status === 200) {
         // If successful, resolve the promise by passing back the request response
           resolve(request.response);
         } else {
@@ -51,7 +51,7 @@
       // Send the request
       request.send();
     });
-  };
+  }
 
   // Get a reference to the body element, and create a new image object
   var body = document.querySelector('body');
