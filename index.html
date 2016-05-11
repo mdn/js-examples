@@ -37,7 +37,7 @@
         // If successful, resolve the promise by passing back the request response
   	      resolve(request.response);
   	    } else {
-        // If it fails, reject the promise with a error message
+        // If it fails, reject the promise with an error message
   	      reject(Error('Image didn\'t load successfully; error code:' + request.statusText));
   	    }
       };
