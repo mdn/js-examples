@@ -1,32 +1,6 @@
 var commandHistory = [];
 var commandHistoryIndex = commandHistory.length;
 
-document.body.addEventListener("keyup", (event) => {
-  var inputForms = document.querySelectorAll(".input>input");
-  if ((event.key != "ArrowUp") ||
-      (!inputForms.length) ||
-      (inputForms[inputForms.length-1] != document.activeElement)) {
-    return;
-  }
-  if (commandHistoryIndex > 0) {
-    commandHistoryIndex--;
-  }
-  inputForms[inputForms.length-1].value = commandHistory[commandHistoryIndex];
-});
-
-document.body.addEventListener("keydown", (event) => {
-  var inputForms = document.querySelectorAll(".input>input");
-  if ((event.key != "ArrowDown") ||
-      (!inputForms.length) ||
-      (inputForms[inputForms.length-1] != document.activeElement)) {
-    return;
-  }
-  if (commandHistoryIndex < commandHistory.length-1) {
-    commandHistoryIndex++;
-  }
-  inputForms[inputForms.length-1].value = commandHistory[commandHistoryIndex];
-});
-
 var reset = document.querySelector("#reset");
 reset.addEventListener('click', (e) => {
   document.location.reload();
@@ -52,11 +26,23 @@ function createInput(init) {
     e.target.parentNode.style.opacity = '0.5';
   });
 
-  inputForm.addEventListener('keyup', (e) => {
-    if ((e.key === "Enter") && (e.target.value)) {
-      executeCode(e.target.value);
-      e.target.disabled = true;
-      e.target.parentNode.style.opacity = '0.5';
+  inputForm.addEventListener('keyup', (event) => {
+    if ((event.key === "Enter") && (event.target.value)) {
+      executeCode(event.target.value);
+      event.target.disabled = true;
+      event.target.parentNode.style.opacity = '0.5';
+    } else if ((event.key === "ArrowUp")) {
+      if (commandHistoryIndex > 0) {
+        commandHistoryIndex--;
+      }
+      event.target.value = commandHistory[commandHistoryIndex];
+    } else if ((event.key === "ArrowDown")) {
+      if (commandHistoryIndex < commandHistory.length-1) {
+        commandHistoryIndex++;
+      }
+      if (commandHistoryIndex < commandHistory.length) {
+        event.target.value = commandHistory[commandHistoryIndex];
+      }
     }
   });
       
