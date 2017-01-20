@@ -1,5 +1,5 @@
 var commandHistory = [];
-var commandHistoryIndex = history.length;
+var commandHistoryIndex = commandHistory.length;
 
 document.body.addEventListener("keyup", (event) => {
   var inputForms = document.querySelectorAll(".input>input");
