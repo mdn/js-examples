@@ -17,7 +17,7 @@ function createInput(init) {
   inputPara.textContent = '>';
   inputDiv.appendChild(inputPara);
   inputDiv.appendChild(inputForm);
-  document.body.appendChild(inputDiv);
+  document.querySelector("#repl").appendChild(inputDiv);
   inputForm.focus();
 
   inputForm.addEventListener('change', (e) => {
@@ -66,7 +66,7 @@ function executeCode(code) {
   outputDiv.setAttribute('class','output');
   outputPara.textContent = result;
   outputDiv.appendChild(outputPara);
-  document.body.appendChild(outputDiv);
+  document.querySelector("#repl").appendChild(outputDiv);
 
   commandHistory.push(code);
   commandHistoryIndex = commandHistory.length;

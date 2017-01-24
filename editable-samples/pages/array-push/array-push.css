@@ -2,6 +2,10 @@
   * {
     box-sizing: border-box;
   }
+  
+  html, body {
+    height: 100%;
+  }
 
   html {
     background-color: #0C323D;
@@ -45,9 +49,14 @@
     background: #0C323D;
     color: #809089;
   }
-  
+
   #reset {
     float: right;
+  }
+  
+  #repl {
+    overflow: scroll;
+    height: 80%;
   }
 
   div {
