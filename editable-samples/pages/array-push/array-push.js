@@ -55,8 +55,7 @@ function createInput(init) {
 
 function executeCode(code) {
   try {
-    geval(code);
-    var result = '< ' + exampleArray;
+    var result = geval(code);
   } catch(e) {
     var result = 'Error: ' + e.message;
   }
