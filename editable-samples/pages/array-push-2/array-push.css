@@ -1,0 +1,85 @@
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+#main-content {
+  min-height: 100%;
+  margin-bottom: -9em; 
+  padding: 0.5em;
+
+}
+
+#main-content:after {
+  content: "";
+  display: block;
+}
+
+footer {
+  height: 7em; 
+}
+
+html {
+  background-color: #0C323D;
+  color: #809089;
+  font-family: monospace;
+  max-width: 700px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+header {
+  height: 7em;
+  max-height: 7em;
+} 
+
+#main-content, #state {
+  overflow: scroll;
+}
+
+
+p {
+  margin: 0;
+  padding: 0 1%;
+}
+  
+.subitem {
+  padding-left: 1em;
+}
+
+.input p {
+  width: 1%;
+  margin-right: 1%;
+  float: left;
+}
+
+.output p {
+  width: 100%;
+}
+
+.input input {
+  width: 96%;
+  float: left;
+  border: none;
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: monospace;
+  padding: 0;
+  background: #0C323D;
+  color: #809089;
+}
+  
+#reset {
+  float: right;
+  margin-right: 5%;
+}
+
+hr {
+  width: 90%;
+  margin: 0.5em auto;
+}
