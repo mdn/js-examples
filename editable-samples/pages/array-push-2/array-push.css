@@ -8,6 +8,10 @@ html, body {
   height: 100%;
 }
 
+body {
+  max-height: 350px;
+}
+
 #repl {
   margin-top: 8px;
   padding: 0.5em;
