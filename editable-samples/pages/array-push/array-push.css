@@ -15,6 +15,7 @@
 
   body {
     max-width: 700px;
+    max-height: 250px;
   }
 
   p {
