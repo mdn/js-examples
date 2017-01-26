@@ -84,3 +84,14 @@ function executeCode(code) {
 
   createInput();
 }
+
+document.body.addEventListener("click", (event) => {
+
+  if (event.originalTarget === document.querySelector("#repl")) {
+    var inputs = document.querySelectorAll("input");
+    if (inputs.length) {
+      var currentInput = inputs[inputs.length-1];
+      currentInput.focus();
+    }
+  }
+});
