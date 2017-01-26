@@ -8,8 +8,8 @@
   }
 
   html {
-    background-color: #0C323D;
-    color: #809089;
+    background-color: #F4F7F8;
+    color: black;
     font-family: monospace;
   }
 
@@ -47,8 +47,8 @@
     line-height: 1.5;
     font-family: monospace;
     padding: 0;
-    background: #0C323D;
-    color: #809089;
+    background: #F4F7F8;
+    color: black;
   }
 
   #buttons {
