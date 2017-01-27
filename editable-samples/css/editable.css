@@ -36,5 +36,13 @@ input {
 }
   
 #history {
-  opacity: 0.5; 
+  opacity: 0.7; 
+}
+
+.history-input {
+  color: #690;
+}
+
+.history-output {
+  color: #07a;
 }

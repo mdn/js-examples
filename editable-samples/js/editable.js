@@ -52,10 +52,12 @@ function executeCode(code) {
 
   var lastCommand = document.createElement('div');
   lastCommand.setAttribute('class','history-line');
+  lastCommand.setAttribute('class','history-input');
   lastCommand.textContent = `> ${code}`;
   
   var lastResult = document.createElement('div');
   lastResult.setAttribute('class','history-line');
+  lastResult.setAttribute('class','history-output');
   lastResult.textContent = result;
 
   var history = document.querySelector("#history");
