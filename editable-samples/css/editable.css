@@ -1,61 +1,42 @@
 
-  * {
-    box-sizing: border-box;
-  }
+* {
+  box-sizing: border-box;
+}
   
-  html, body {
-    height: 100%;
-  }
+html, body {
+  height: 100%;
+}
 
-  html {
-    background-color: #F4F7F8;
-    color: black;
-    font-family: monospace;
-  }
+html, input {
+  background-color: #F4F7F8;
+  color: black;
+  font-family: monospace;
+  font-size: 16px;
+  line-height: 1.5;
+}
 
-  body {
-    max-width: 700px;
-    max-height: 250px;
-  }
+body {
+  max-width: 700px;
+  max-height: 250px;
+}
 
-  p {
-    margin: 0;
-    padding: 0 1%;
-    font-size: 16px;
-    line-height: 1.5;
-  }
+input {
+  border: none;
+  width: 80%;
+}
+
+#buttons {
+  position: absolute;
+  top: 0.5em;
+  left: 600px;
+  z-index: 1; 
+}
   
-  span.sample {
-    padding-left: 1em;
-  }
-
-  .input p {
-    width: 1%;
-    margin-right: 1%;
-    float: left;
-  }
-
-  .output p {
-    width: 100%;
-  }
-
-  .input input {
-    width: 96%;
-    float: left;
-    border: none;
-    font-size: 16px;
-    line-height: 1.5;
-    font-family: monospace;
-    padding: 0;
-    background: #F4F7F8;
-    color: black;
-  }
-
-  #buttons {
-    float: right;
-  }
+#repl {
+  overflow: scroll;
+  height: 80%;
+}
   
-  #repl {
-    overflow: scroll;
-    height: 80%;
-  }
+#history {
+  opacity: 0.5; 
+}

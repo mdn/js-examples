@@ -19,50 +19,29 @@ var console = {
   }
 }
 
-function createInput(init) {
-  var inputDiv = document.createElement('div');
-  var inputPara = document.createElement('p');
-  var inputForm = document.createElement('input');
+var inputBox = document.querySelector("#input>input");
 
-  inputDiv.setAttribute('class','input');
-  inputPara.textContent = '>';
-  inputDiv.appendChild(inputPara);
-  inputDiv.appendChild(inputForm);
-  document.querySelector("#repl").appendChild(inputDiv);
-  inputForm.focus();
+inputBox.addEventListener('change', (e) => {
+  executeCode(e.target.value);
+});
 
-  inputForm.addEventListener('change', (e) => {
-    executeCode(e.target.value);
-    e.target.disabled = true;
-    e.target.parentNode.style.opacity = '0.5';
-  });
-
-  inputForm.addEventListener('keyup', (event) => {
-    if ((event.key === "Enter") && (event.target.value)) {
-      executeCode(event.target.value);
-      event.target.disabled = true;
-      event.target.parentNode.style.opacity = '0.5';
-    } else if ((event.key === "ArrowUp")) {
-      if (commandHistoryIndex > 0) {
-        commandHistoryIndex--;
-      }
-      event.target.value = commandHistory[commandHistoryIndex];
-    } else if ((event.key === "ArrowDown")) {
-      if (commandHistoryIndex < commandHistory.length-1) {
-        commandHistoryIndex++;
-      }
-      if (commandHistoryIndex < commandHistory.length) {
-        event.target.value = commandHistory[commandHistoryIndex];
-      }
+inputBox.addEventListener('keyup', (event) => {
+  if ((event.key === "Enter") && (event.target.value)) {
+    executeCode(event.target.value);
+  } else if ((event.key === "ArrowUp")) {
+    if (commandHistoryIndex > 0) {
+      commandHistoryIndex--;
     }
-  });
-      
-  if (init) {
-    inputForm.value = init;
-    var event = new Event('change');
-    inputForm.dispatchEvent(event);
+    event.target.value = commandHistory[commandHistoryIndex];
+  } else if ((event.key === "ArrowDown")) {
+    if (commandHistoryIndex < commandHistory.length-1) {
+      commandHistoryIndex++;
+    }
+    if (commandHistoryIndex < commandHistory.length) {
+      event.target.value = commandHistory[commandHistoryIndex];
+    }
   }
-}
+});
 
 function executeCode(code) {
   try {
@@ -71,27 +50,27 @@ function executeCode(code) {
     var result = 'Error: ' + e.message;
   }
 
-  var outputDiv = document.createElement('div');
-  var outputPara = document.createElement('p');
+  var lastCommand = document.createElement('div');
+  lastCommand.setAttribute('class','history-line');
+  lastCommand.textContent = `> ${code}`;
+  
+  var lastResult = document.createElement('div');
+  lastResult.setAttribute('class','history-line');
+  lastResult.textContent = result;
 
-  outputDiv.setAttribute('class','output');
-  outputPara.textContent = result;
-  outputDiv.appendChild(outputPara);
-  document.querySelector("#repl").appendChild(outputDiv);
+  var history = document.querySelector("#history");
+  history.appendChild(lastCommand);
+  history.appendChild(lastResult);
+
+  inputBox.value = "";
+  inputBox.focus();
 
   commandHistory.push(code);
   commandHistoryIndex = commandHistory.length;
-
-  createInput();
 }
 
 document.body.addEventListener("click", (event) => {
-
   if (event.originalTarget === document.querySelector("#repl")) {
-    var inputs = document.querySelectorAll("input");
-    if (inputs.length) {
-      var currentInput = inputs[inputs.length-1];
-      currentInput.focus();
-    }
+    inputBox.focus();
   }
 });
