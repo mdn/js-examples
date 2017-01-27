@@ -3,7 +3,7 @@
   box-sizing: border-box;
 }
   
-html, body {
+html, body, #repl {
   height: 100%;
 }
 
@@ -32,7 +32,6 @@ input {
   
 #repl {
   overflow: scroll;
-  height: 80%;
 }
   
 #history {

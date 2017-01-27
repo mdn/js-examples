@@ -63,6 +63,7 @@ function executeCode(code) {
   history.appendChild(lastResult);
 
   inputBox.value = "";
+  inputBox.scrollIntoView();
   inputBox.focus();
 
   commandHistory.push(code);
