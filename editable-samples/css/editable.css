@@ -26,9 +26,7 @@ input {
 }
 
 #buttons {
-  position: absolute;
-  top: 0.5em;
-  left: 600px;
+  float: right;
   z-index: 1; 
 }
   
