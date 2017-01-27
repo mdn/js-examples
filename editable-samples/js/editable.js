@@ -63,8 +63,9 @@ function executeCode(code) {
   history.appendChild(lastResult);
 
   inputBox.value = "";
-  inputBox.scrollIntoView();
   inputBox.focus();
+
+  document.querySelector("#repl").scrollTop = inputBox.offsetTop;
 
   commandHistory.push(code);
   commandHistoryIndex = commandHistory.length;
