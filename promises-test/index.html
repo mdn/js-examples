@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+
+    <title>Promise example</title>
+
+    <link rel="stylesheet" href="">
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <h1>Promise example</h1>
+
+    <p>Darth Vader image by <a href="https://www.flickr.com/photos/digital_stability/">Shawn Taylor</a>, published under a <a href="https://creativecommons.org/licenses/by-nc-nd/2.0/">Attribution-NonCommercial-NoDerivs 2.0 Generic</a> license.</p>
+  </body>
+
+  <script>
+  function imgLoad(url) {
+    // Create new promise with the Promise() constructor;
+    // This has as its argument a function
+    // with two parameters, resolve and reject
+    return new Promise(function(resolve, reject) {
+      // Standard XHR to load an image
+      var request = new XMLHttpRequest();
+      request.open('GET', url);
+      request.responseType = 'blob';
+      // When the request loads, check whether it was successful
+      request.onload = function() {
+        if (request.status === 200) {
+        // If successful, resolve the promise by passing back the request response
+          resolve(request.response);
+        } else {
+        // If it fails, reject the promise with a error message
+          reject(Error('Image didn\'t load successfully; error code:' + request.statusText));
+        }
+      };
+      request.onerror = function() {
+      // Also deal with the case when the entire request fails to begin with
+      // This is probably a network error, so reject the promise with an appropriate message
+          reject(Error('There was a network error.'));
+      };
+      // Send the request
+      request.send();
+    });
+  }
+  // Get a reference to the body element, and create a new image object
+  var body = document.querySelector('body');
+  var myImage = new Image();
+  // Call the function with the URL we want to load, but then chain the
+  // promise then() method on to the end of it. This contains two callbacks
+  imgLoad('myLittleVader.jpg').then(function(response) {
+    // The first runs when the promise resolves, with the request.reponse
+    // specified within the resolve() method.
+    var imageURL = window.URL.createObjectURL(response);
+    myImage.src = imageURL;
+    body.appendChild(myImage);
+    // The second runs when the promise
+    // is rejected, and logs the Error specified with the reject() method.
+  }, function(Error) {
+    console.log(Error);
+  });
+  </script>
+</html>
