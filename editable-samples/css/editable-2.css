@@ -17,3 +17,7 @@ body {
   font-family: courier;
   font-size: 13px;
 }
+
+#editor, #output {
+  font-size: 14px;
+}

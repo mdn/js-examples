@@ -12,7 +12,8 @@ var cmMatchToShowCompletions = "exampleArray.";
 
 var cmCompletionChoices = [
   "push('cows')",
-  "push('fish', 'frogs')"
+  "push('fish', 'frogs')",
+  "push('fish', 'frogs', 1, 2, 3, true)"
 ];
 
 var cmSelectLine = 4;
