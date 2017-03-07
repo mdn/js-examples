@@ -5,6 +5,18 @@ var edit = document.getElementById("edit");
 var execute = document.getElementById("execute");
 var reset = document.getElementById("reset");
 
+var gConsole = console;
+
+var console = {
+  log: function(loggedItem) {
+    if (typeof(loggedItem) === "string") {
+      return loggedItem;
+    } else {
+      return eval(loggedItem);
+    }
+  }
+}
+
 var cmOptions = {
   mode: "javascript",
   theme: "mdn-like"

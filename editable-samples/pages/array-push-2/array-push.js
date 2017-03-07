@@ -5,8 +5,8 @@ var exampleArray = ['pigs', 'goats', 'sheep']
 // add one or more elements
 exampleArray.push('cows');
 
-// evaluate the result
-exampleArray;`;
+// log the result
+console.log(exampleArray);`;
 
 var cmMatchToShowCompletions = "exampleArray.";
 
