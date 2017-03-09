@@ -95,7 +95,14 @@ function showCompletions(cm, event) {
 
   if(!popupKeyCodes[(event.keyCode || event.which).toString()]) {
     CodeMirror.showHint(cm, CodeMirror.hint.javascript, {completeSingle: false, closeOnUnfocus:false});
-  }           
+  }
+  if (cmEditor.state.completionActive) {
+    var picky = cmEditor.state.completionActive.pick.bind(cmEditor.state.completionActive);
+    cmEditor.state.completionActive.pick = function(data, i) {
+      picky(data, i);
+      applyCode();
+    }
+  }
 }
 
 cmEditor.on("keyup", showCompletions);
