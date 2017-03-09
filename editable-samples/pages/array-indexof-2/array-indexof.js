@@ -15,7 +15,7 @@ var cmCompletionChoices = [
   "indexOf('bison', 2)",
   "indexOf('bison', -2)",
   "indexOf('ant', 1)",
-  "indexOf('elephant')",
+  "indexOf('duck')",
   "indexOf('aardvark')",
   "indexOf(2)"
 ];
