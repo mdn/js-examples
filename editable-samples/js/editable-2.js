@@ -54,6 +54,8 @@ output.textContent = result;
 reset.addEventListener("click", function() {
   cmEditor.doc.setValue(cmInitContent);
   applyCode();
+  reset.classList.add("hidden");
+  edit.classList.remove("hidden");
 });
 
 execute.addEventListener("click", function() {
@@ -78,6 +80,8 @@ edit.addEventListener("click", function() {
   cmEditor.focus();
   selectValue();
   output.textContent = "";
+  edit.classList.add("hidden");
+  reset.classList.remove("hidden");
 });
 
 window.addEventListener("load", applyCode);
