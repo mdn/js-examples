@@ -19,9 +19,7 @@ var console = {
 
 var cmOptions = {
   mode: "javascript",
-  theme: "eclipse",
-  lineNumbers: true,
-  showCursorWhenSelecting: true
+  theme: "mdn-like"
 }
 
 var cmEditor = CodeMirror(editor, cmOptions);
