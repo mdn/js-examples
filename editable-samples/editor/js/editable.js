@@ -20,13 +20,16 @@ var cmOptions = {
   mode: "javascript",
   theme: "eclipse",
   lineNumbers: true,
-  showCursorWhenSelecting: true
+  showCursorWhenSelecting: true,
+  styleActiveLine: true
 }
 
 var cmEditor = CodeMirror(editor, cmOptions);
 cmEditor.setSize("100%", 150);
 cmEditor.doc.setValue(cmInitContent);
-
+cmEditor.focus();
+cmEditor.doc.setCursor({line: cmSelectLine, ch: cmSelectChStart});
+/*
 CodeMirror.hint.javascript = function(cm) {
   var inner = {from: cm.getCursor(), to: cm.getCursor(), list: []};
   
@@ -36,7 +39,7 @@ CodeMirror.hint.javascript = function(cm) {
     inner.list = cmCompletionChoices;
   }
   return inner;
-};
+};*/
 
 function applyCode() {
 
