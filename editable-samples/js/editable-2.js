@@ -19,7 +19,7 @@ var console = {
 
 var cmOptions = {
   mode: "javascript",
-  theme: "tomorrow-night-eighties",
+  theme: "eclipse",
   lineNumbers: true,
   showCursorWhenSelecting: true
 }
