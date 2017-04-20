@@ -1,7 +1,6 @@
 var editor = document.getElementById("editor");
 var output = document.getElementById("output");
 
-var edit = document.getElementById("edit");
 var execute = document.getElementById("execute");
 var reset = document.getElementById("reset");
 
@@ -75,7 +74,7 @@ function selectValue() {
 
   cmEditor.doc.setSelection(start, end);
 }
-
+/*
 edit.addEventListener("click", function() {
   cmEditor.focus();
   selectValue();
@@ -83,7 +82,7 @@ edit.addEventListener("click", function() {
   edit.classList.add("hidden");
   reset.classList.remove("hidden");
 });
-
+*/
 window.addEventListener("load", applyCode);
 
 function showCompletions(cm, event) {
