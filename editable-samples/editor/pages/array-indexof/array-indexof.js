@@ -9,4 +9,4 @@ var index = beasts.indexOf('bison');
 console.log(index);`;
 
 var cmSelectLine = 4;
-var cmSelectChStart = 19;
+var cmSelectChStart = 27;

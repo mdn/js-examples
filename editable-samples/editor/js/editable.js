@@ -39,7 +39,13 @@ function applyCode() {
   } catch(e) {
     var result = 'Error: ' + e.message;
 }
-output.textContent = result;
+
+  output.classList.add("fade-in");
+  output.firstChild.textContent = result;
+
+  output.firstChild.addEventListener("animationend", (e) => {
+    e.target.parentNode.classList.remove("fade-in");
+  });
 }
 
 reset.addEventListener("click", function() {

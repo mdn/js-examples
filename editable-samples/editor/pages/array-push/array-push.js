@@ -9,4 +9,4 @@ exampleArray.push('cows');
 console.log(exampleArray);`;
 
 var cmSelectLine = 4;
-var cmSelectChStart = 13;
+var cmSelectChStart = 18;

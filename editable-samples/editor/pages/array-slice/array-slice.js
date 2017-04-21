@@ -9,4 +9,4 @@ var sliced = a.slice(2, 4);
 console.log(sliced);`;
 
 var cmSelectLine = 4;
-var cmSelectChStart = 15;
+var cmSelectChStart = 21;

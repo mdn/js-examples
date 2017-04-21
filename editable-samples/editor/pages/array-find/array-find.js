@@ -9,4 +9,4 @@ var found = numbers.find(function(e) { return e > 10});
 console.log(found);`;
 
 var cmSelectLine = 4;
-var cmSelectChStart = 20;
+var cmSelectChStart = 25;

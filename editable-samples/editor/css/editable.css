@@ -49,3 +49,20 @@ body {
 #editor>input.hidden {
   display: none;
 }
+
+#output>p {
+  margin: 0;
+}
+
+.fade-in p {
+    animation: fadein 0.5s;
+}
+
+@keyframes fadein {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}

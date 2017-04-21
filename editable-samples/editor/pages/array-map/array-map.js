@@ -9,4 +9,4 @@ var mapped = numbers.map(function(x) { return x * 2 });
 console.log(mapped);`;
 
 var cmSelectLine = 4;
-var cmSelectChStart = 21;
+var cmSelectChStart = 25;
