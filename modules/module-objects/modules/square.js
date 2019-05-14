@@ -28,7 +28,4 @@ function reportPerimeter(length, listId) {
   list.appendChild(listItem);
 }
 
-export { name as squareName,
-         draw as drawSquare,
-         reportArea as reportSquareArea,
-         reportPerimeter as reportSquarePerimeter };
+export { name, draw, reportArea, reportPerimeter };
