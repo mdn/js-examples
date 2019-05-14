@@ -1,6 +1,6 @@
-import { Canvas } from '/modules/canvas.js';
+import { Canvas } from '/js-examples/modules/module-aggregation/modules/canvas.js';
 
-import { Square, Circle, Triangle } from '/modules/shapes.js';
+import { Square, Circle, Triangle } from '/js-examples/modules/module-aggregation/modules/shapes.js';
 
 // create the canvas and reporting list
 let myCanvas = new Canvas('myCanvas', document.body, 480, 320);
