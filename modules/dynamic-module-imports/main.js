@@ -1,4 +1,4 @@
-import { Canvas } from '/js-examples/modules/dynamic-module-imports/modules/canvas.js';
+import { Canvas } from './modules/canvas.js';
 
 let circleBtn = document.querySelector('.circle');
 let squareBtn = document.querySelector('.square');
@@ -11,7 +11,7 @@ myCanvas.createReportList();
 
 // draw a square
 squareBtn.addEventListener('click', () => {
-  import('/js-examples/modules/dynamic-module-imports/modules/square.js').then((Module) => {
+  import('./modules/square.js').then((Module) => {
     let square1 = new Module.Square(myCanvas.ctx, myCanvas.listId, 50, 50, 100, 'blue');
     square1.draw();
     square1.reportArea();
@@ -21,7 +21,7 @@ squareBtn.addEventListener('click', () => {
 
 // draw a circle
 circleBtn.addEventListener('click', () => {
-  import('/js-examples/modules/dynamic-module-imports/modules/circle.js').then((Module) => {
+  import('./modules/circle.js').then((Module) => {
     let circle1 = new Module.Circle(myCanvas.ctx, myCanvas.listId, 75, 200, 100, 'green');
     circle1.draw();
     circle1.reportArea();
@@ -31,7 +31,7 @@ circleBtn.addEventListener('click', () => {
 
 // draw a triangle
 triangleBtn.addEventListener('click', () => {
-  import('/js-examples/modules/dynamic-module-imports/modules/triangle.js').then((Module) => {
+  import('./modules/triangle.js').then((Module) => {
     let triangle1 = new Module.Triangle(myCanvas.ctx, myCanvas.listId, 100, 75, 190, 'yellow');
     triangle1.draw();
     triangle1.reportArea();
