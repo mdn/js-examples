@@ -1,19 +1,19 @@
-import { create, createReportList } from './modules/canvas.js';
+import { create, createReportList } from './modules/canvas.mjs';
 
 import { name as squareName,
          draw as drawSquare,
          reportArea as reportSquareArea,
-         reportPerimeter as reportSquarePerimeter } from './modules/square.js';
+         reportPerimeter as reportSquarePerimeter } from './modules/square.mjs';
 
 import { name as circleName,
          draw as drawCircle,
          reportArea as reportCircleArea,
-         reportPerimeter as reportCirclePerimeter } from './modules/circle.js';
+         reportPerimeter as reportCirclePerimeter } from './modules/circle.mjs';
 
 import { name as triangleName,
         draw as drawTriangle,
         reportArea as reportTriangleArea,
-        reportPerimeter as reportTrianglePerimeter } from './modules/triangle.js';
+        reportPerimeter as reportTrianglePerimeter } from './modules/triangle.mjs';
 
 // create the canvas and reporting list
 let myCanvas = create('myCanvas', document.body, 480, 320);
