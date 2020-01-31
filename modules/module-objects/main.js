@@ -1,8 +1,8 @@
-import * as Canvas from './modules/canvas.mjs';
+import * as Canvas from './modules/canvas.js';
 
-import * as Square from './modules/square.mjs';
-import * as Circle from './modules/circle.mjs';
-import * as Triangle from './modules/triangle.mjs';
+import * as Square from './modules/square.js';
+import * as Circle from './modules/circle.js';
+import * as Triangle from './modules/triangle.js';
 
 // create the canvas and reporting list
 let myCanvas = Canvas.create('myCanvas', document.body, 480, 320);
