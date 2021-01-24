@@ -1,5 +1,5 @@
-import { Canvas } from './modules/canvas.js';
 import colors from './modules/getColors.js';
+import { Canvas } from './modules/canvas.js';
 
 let circleBtn = document.querySelector('.circle');
 let squareBtn = document.querySelector('.square');
