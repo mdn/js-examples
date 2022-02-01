@@ -1,3 +1,5 @@
+hi there!
+
 # js-examples
 This repository contains examples of JavaScript usage.
 
