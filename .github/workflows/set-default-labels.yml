@@ -5,5 +5,5 @@ jobs:
   set-default-labels:
     uses: mdn/workflows/.github/workflows/set-default-labels.yml@main
     with:
-      target-repo: "mdn/perf-examples"
+      target-repo: "mdn/js-examples"
       should-delete-labels: true
