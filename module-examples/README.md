@@ -7,3 +7,4 @@ The "modules" directory contains a series of examples that explain how [JavaScri
 * [classes](classes): Provides an example of importing a class from a module ([run the example live](http://mdn.github.io/js-examples/module-examples/classes)).
 * [module-aggregation](module-aggregation): Shows how sub module features can be aggregated into a parent module using `export { x } from 'y.js'` syntax ([run the example live](http://mdn.github.io/js-examples/module-examples/module-aggregation)).
 * [dynamic-module-imports](dynamic-module-imports): Demonstrates dynamic module loading using `import().then()` ([run the example live](http://mdn.github.io/js-examples/module-examples/dynamic-module-imports)).
+* [top-level-await](top-level-await): Shows the use of top-level await when exporting data from a module. ([run the example live](https://mdn.github.io/js-examples/module-examples/top-level-await/)).
