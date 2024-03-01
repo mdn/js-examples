@@ -1,5 +1,9 @@
-import colors from './modules/getColors.js';
 import { Canvas } from './modules/canvas.js';
+import colors from './modules/getColors.js';
+ // top level await
+let squareModule = await import('./modules/square.js');
+let circleModule = await import('./modules/circle.js');
+let triangleModule = await import('./modules/triangle.js');
 
 let circleBtn = document.querySelector('.circle');
 let squareBtn = document.querySelector('.square');
@@ -11,31 +15,25 @@ myCanvas.create();
 myCanvas.createReportList();
 
 // draw a square
-squareBtn.addEventListener('click', () => {
-  import('./modules/square.js').then((Module) => {
-    let square1 = new Module.Square(myCanvas.ctx, myCanvas.listId, 50, 50, 100, colors.blue);
-    square1.draw();
-    square1.reportArea();
-    square1.reportPerimeter();
-  })
+squareBtn.addEventListener('click',() => {
+    let square = new squareModule.Square(myCanvas.ctx, myCanvas.listId, 50, 50, 100, colors.blue);
+    square.draw();
+    square.reportArea();
+    square.reportPerimeter();
 });
 
 // draw a circle
-circleBtn.addEventListener('click', () => {
-  import('./modules/circle.js').then((Module) => {
-    let circle1 = new Module.Circle(myCanvas.ctx, myCanvas.listId, 75, 200, 100, colors.green);
-    circle1.draw();
-    circle1.reportArea();
-    circle1.reportPerimeter();
-  })
+circleBtn.addEventListener('click',  () => {
+    let circle = new circleModule.Circle(myCanvas.ctx, myCanvas.listId, 75, 200, 100, colors.green);
+    circle.draw();
+    circle.reportArea();
+    circle.reportPerimeter();
 });
 
 // draw a triangle
-triangleBtn.addEventListener('click', () => {
-  import('./modules/triangle.js').then((Module) => {
-    let triangle1 = new Module.Triangle(myCanvas.ctx, myCanvas.listId, 100, 75, 190, colors.yellow);
-    triangle1.draw();
-    triangle1.reportArea();
-    triangle1.reportPerimeter();
-  })
+triangleBtn.addEventListener('click',  () => {
+    let triangle = new triangleModule.Triangle(myCanvas.ctx, myCanvas.listId, 100, 75, 190, colors.yellow);
+    triangle.draw();
+    triangle.reportArea();
+    triangle.reportPerimeter();
 });
