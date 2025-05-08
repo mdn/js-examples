@@ -1,16 +1,3193 @@
-<!DOCTYPE html>
-<html lang="en-US">
-  <head>
-    <meta charset="utf-8">
-    <title>Basic JavaScript module example</title>
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام حجز موعيد عيادة طبية</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-      canvas {
-        border: 1px solid black;
-      }
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+        
+        :root {
+            --primary-color: #5D5CDE;
+            --light-bg: #FFFFFF;
+            --dark-bg: #181818;
+            --light-text: #333333;
+            --dark-text: #F0F0F0;
+            --light-card: #F9F9F9;
+            --dark-card: #252525;
+            --light-hover: #F0F0F0;
+            --dark-hover: #303030;
+            --light-border: #E0E0E0;
+            --dark-border: #404040;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Light Mode */
+        body {
+            background-color: var(--light-bg);
+            color: var(--light-text);
+        }
+        
+        .card {
+            background-color: var(--light-card);
+            border: 1px solid var(--light-border);
+        }
+        
+        .hover-item:hover {
+            background-color: var(--light-hover);
+        }
+        
+        /* Dark Mode */
+        body.dark {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+        
+        body.dark .card {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+        }
+        
+        body.dark .hover-item:hover {
+            background-color: var(--dark-hover);
+        }
+        
+        body.dark .text-gray-700 {
+            color: var(--dark-text);
+        }
+        
+        body.dark .bg-white {
+            background-color: var(--dark-card);
+        }
+        
+        body.dark .border-gray-300 {
+            border-color: var(--dark-border);
+        }
+        
+        body.dark .text-gray-900 {
+            color: var(--dark-text);
+        }
+        
+        body.dark .bg-gray-50 {
+            background-color: var(--dark-hover);
+        }
+        
+        body.dark input, body.dark select, body.dark textarea {
+            background-color: var(--dark-card);
+            color: var(--dark-text);
+            border-color: var(--dark-border);
+        }
+        
+        body.dark .modal-content {
+            background-color: var(--dark-card);
+            color: var(--dark-text);
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(93, 92, 222, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s infinite linear;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
-    <script type="module" src="main.js"></script>
-  </head>
-  <body>
+</head>
+<body>
+    <!-- الشريط العلوي -->
+    <header class="bg-indigo-600 text-white py-4 px-6 flex justify-between items-center">
+        <div class="flex items-center">
+            <i class="fas fa-heartbeat text-2xl ml-2"></i>
+            <h1 class="text-xl md:text-2xl font-bold">نظام العيادة الطبية</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-indigo-700 focus:outline-none">
+                <i id="theme-icon" class="fas fa-moon"></i>
+            </button>
+            <div class="relative" id="user-menu-container">
+                <button id="user-menu-button" class="flex items-center space-x-1 focus:outline-none">
+                    <span id="current-user-name">تسجيل الدخول</span>
+                    <i class="fas fa-user-circle text-xl"></i>
+                </button>
+                <div id="user-menu" class="absolute left-0 mt-2 hidden w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
+                    <div class="py-1" id="user-menu-items">
+                        <button id="login-button" class="block w-full text-right px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">تسجيل الدخول</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
-  </body>
-</html>
+    <!-- القائمة الجانبية والمحتوى الرئيسي -->
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- القائمة الجانبية -->
+        <aside id="sidebar" class="w-full md:w-64 bg-indigo-800 text-white hidden md:block">
+            <nav class="p-4">
+                <ul id="nav-links">
+                    <li class="nav-item mb-2" data-section="dashboard" data-role="all">
+                        <a href="#" class="flex items-center p-2 rounded-md hover:bg-indigo-700 hover-item">
+                            <i class="fas fa-tachometer-alt w-6"></i>
+                            <span>لوحة التحكم</span>
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2" data-section="appointments" data-role="all">
+                        <a href="#" class="flex items-center p-2 rounded-md hover:bg-indigo-700 hover-item">
+                            <i class="fas fa-calendar-check w-6"></i>
+                            <span>المواعيد</span>
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2" data-section="patients" data-role="admin,reception,doctor">
+                        <a href="#" class="flex items-center p-2 rounded-md hover:bg-indigo-700 hover-item">
+                            <i class="fas fa-user-injured w-6"></i>
+                            <span>المرضى</span>
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2" data-section="doctors" data-role="admin">
+                        <a href="#" class="flex items-center p-2 rounded-md hover:bg-indigo-700 hover-item">
+                            <i class="fas fa-user-md w-6"></i>
+                            <span>الأطباء</span>
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2" data-section="reports" data-role="admin,doctor">
+                        <a href="#" class="flex items-center p-2 rounded-md hover:bg-indigo-700 hover-item">
+                            <i class="fas fa-chart-bar w-6"></i>
+                            <span>التقارير</span>
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2" data-section="export" data-role="admin">
+                        <a href="#" class="flex items-center p-2 rounded-md hover:bg-indigo-700 hover-item">
+                            <i class="fas fa-file-export w-6"></i>
+                            <span>تصدير البيانات</span>
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2" data-section="users" data-role="admin">
+                        <a href="#" class="flex items-center p-2 rounded-md hover:bg-indigo-700 hover-item">
+                            <i class="fas fa-users-cog w-6"></i>
+                            <span>إدارة المستخدمين</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- زر القائمة للشاشات الصغيرة -->
+        <button id="mobile-menu-button" class="md:hidden fixed top-20 right-4 bg-indigo-600 text-white p-2 rounded-md z-10">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="flex-1 p-6">
+            <!-- قسم لوحة التحكم -->
+            <section id="dashboard-section" class="section-content">
+                <h2 class="text-2xl font-bold mb-6">لوحة التحكم</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="card rounded-lg shadow-md p-6 flex items-center">
+                        <div class="rounded-full bg-blue-100 dark:bg-blue-900 p-3 ml-4">
+                            <i class="fas fa-calendar-check text-blue-500 dark:text-blue-300 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400">مواعيد اليوم</p>
+                            <h3 class="text-2xl font-bold" id="today-appointments-count">0</h3>
+                        </div>
+                    </div>
+                    <div class="card rounded-lg shadow-md p-6 flex items-center">
+                        <div class="rounded-full bg-green-100 dark:bg-green-900 p-3 ml-4">
+                            <i class="fas fa-user-injured text-green-500 dark:text-green-300 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400">إجمالي المرضى</p>
+                            <h3 class="text-2xl font-bold" id="total-patients-count">0</h3>
+                        </div>
+                    </div>
+                    <div class="card rounded-lg shadow-md p-6 flex items-center">
+                        <div class="rounded-full bg-purple-100 dark:bg-purple-900 p-3 ml-4">
+                            <i class="fas fa-user-md text-purple-500 dark:text-purple-300 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400">الأطباء</p>
+                            <h3 class="text-2xl font-bold" id="total-doctors-count">0</h3>
+                        </div>
+                    </div>
+                    <div class="card rounded-lg shadow-md p-6 flex items-center">
+                        <div class="rounded-full bg-yellow-100 dark:bg-yellow-900 p-3 ml-4">
+                            <i class="fas fa-clock text-yellow-500 dark:text-yellow-300 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400">مواعيد منتظرة</p>
+                            <h3 class="text-2xl font-bold" id="pending-appointments-count">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- مواعيد اليوم -->
+                <div class="card rounded-lg shadow-md p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">مواعيد اليوم</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الوقت</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">اسم المريض</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الطبيب</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="today-appointments-table" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- سيتم إضافة البيانات هنا عن طريق جافاسكريبت -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم المواعيد -->
+            <section id="appointments-section" class="section-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">المواعيد</h2>
+                    <button id="add-appointment-button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        <i class="fas fa-plus ml-1"></i> موعد جديد
+                    </button>
+                </div>
+
+                <div class="card rounded-lg shadow-md p-6 mb-8">
+                    <div class="mb-4 flex flex-wrap gap-4">
+                        <div class="w-full md:w-auto">
+                            <label for="filter-date" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">التاريخ</label>
+                            <input type="date" id="filter-date" class="block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="w-full md:w-auto">
+                            <label for="filter-doctor" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">الطبيب</label>
+                            <select id="filter-doctor" class="block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">الكل</option>
+                                <!-- سيتم إضافة الأطباء هنا عن طريق جافاسكريبت -->
+                            </select>
+                        </div>
+                        <div class="w-full md:w-auto">
+                            <label for="filter-status" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">الحالة</label>
+                            <select id="filter-status" class="block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">الكل</option>
+                                <option value="pending">قادم</option>
+                                <option value="completed">مكتمل</option>
+                                <option value="cancelled">ملغي</option>
+                            </select>
+                        </div>
+                        <div class="w-full md:w-auto flex items-end">
+                            <button id="filter-appointments-button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                <i class="fas fa-filter ml-1"></i> تصفية
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">التاريخ</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الوقت</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">اسم المريض</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الطبيب</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الحالة</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appointments-table" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- سيتم إضافة البيانات هنا عن طريق جافاسكريبت -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم المرضى -->
+            <section id="patients-section" class="section-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">المرضى</h2>
+                    <button id="add-patient-button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        <i class="fas fa-plus ml-1"></i> مريض جديد
+                    </button>
+                </div>
+
+                <div class="card rounded-lg shadow-md p-6 mb-8">
+                    <div class="mb-4">
+                        <div class="relative">
+                            <input type="text" id="search-patients" placeholder="بحث عن مريض..." class="block w-full p-2 pl-10 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">رقم الملف</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الاسم</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">رقم الهاتف</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">البريد الإلكتروني</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">تاريخ الميلاد</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patients-table" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- سيتم إضافة البيانات هنا عن طريق جافاسكريبت -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم الأطباء -->
+            <section id="doctors-section" class="section-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">الأطباء</h2>
+                    <button id="add-doctor-button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        <i class="fas fa-plus ml-1"></i> طبيب جديد
+                    </button>
+                </div>
+
+                <div class="card rounded-lg shadow-md p-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="doctors-cards">
+                        <!-- سيتم إضافة بطاقات الأطباء هنا عن طريق جافاسكريبت -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم التقارير -->
+            <section id="reports-section" class="section-content hidden">
+                <h2 class="text-2xl font-bold mb-6">التقارير</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="card rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-bold mb-4">تقارير داخلية</h3>
+                        <div class="space-y-4">
+                            <button class="report-button w-full text-right p-3 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700" data-report="appointments-summary">
+                                <i class="fas fa-calendar-check ml-2 text-indigo-500"></i>
+                                ملخص المواعيد
+                            </button>
+                            <button class="report-button w-full text-right p-3 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700" data-report="doctors-performance">
+                                <i class="fas fa-user-md ml-2 text-indigo-500"></i>
+                                أداء الأطباء
+                            </button>
+                            <button class="report-button w-full text-right p-3 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700" data-report="patients-statistics">
+                                <i class="fas fa-user-injured ml-2 text-indigo-500"></i>
+                                إحصائيات المرضى
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-bold mb-4">تقارير خارجية</h3>
+                        <div class="mb-4">
+                            <button id="sync-external-data" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                <i class="fas fa-sync-alt ml-1"></i> مزامنة البيانات الخارجية
+                            </button>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                آخر تحديث: <span id="last-sync-time">لم تتم المزامنة بعد</span>
+                            </p>
+                        </div>
+                        <div class="space-y-4">
+                            <button class="report-button w-full text-right p-3 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700" data-report="insurance-claims">
+                                <i class="fas fa-file-medical-alt ml-2 text-indigo-500"></i>
+                                مطالبات التأمين
+                            </button>
+                            <button class="report-button w-full text-right p-3 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700" data-report="financial-summary">
+                                <i class="fas fa-coins ml-2 text-indigo-500"></i>
+                                ملخص مالي
+                            </button>
+                            <button class="report-button w-full text-right p-3 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700" data-report="medication-usage">
+                                <i class="fas fa-pills ml-2 text-indigo-500"></i>
+                                استخدام الأدوية
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="report-result" class="card rounded-lg shadow-md p-6 hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold" id="report-title">عنوان التقرير</h3>
+                        <button id="close-report" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="report-content">
+                        <!-- محتوى التقرير سيظهر هنا -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم تصدير البيانات -->
+            <section id="export-section" class="section-content hidden">
+                <h2 class="text-2xl font-bold mb-6">تصدير البيانات</h2>
+                
+                <div class="card rounded-lg shadow-md p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">اختر البيانات للتصدير</h3>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="export-appointments" class="export-checkbox w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            <label for="export-appointments" class="mr-2 block text-gray-700 dark:text-gray-300">المواعيد</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="export-patients" class="export-checkbox w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            <label for="export-patients" class="mr-2 block text-gray-700 dark:text-gray-300">المرضى</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="export-doctors" class="export-checkbox w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            <label for="export-doctors" class="mr-2 block text-gray-700 dark:text-gray-300">الأطباء</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="export-reports" class="export-checkbox w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            <label for="export-reports" class="mr-2 block text-gray-700 dark:text-gray-300">التقارير</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="export-format" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">صيغة التصدير</label>
+                        <select id="export-format" class="block w-full md:w-64 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="json">JSON</option>
+                            <option value="csv">CSV</option>
+                            <option value="excel">Excel</option>
+                            <option value="pdf">PDF</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-4">
+                        <button id="preview-export-button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            <i class="fas fa-eye ml-1"></i> معاينة
+                        </button>
+                        <button id="export-data-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            <i class="fas fa-file-export ml-1"></i> تصدير
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="export-preview" class="card rounded-lg shadow-md p-6 hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold">معاينة البيانات</h3>
+                        <button id="close-preview" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <pre id="export-preview-content" class="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto" dir="ltr"></pre>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            ملاحظة: هذه معاينة للبيانات. لتنزيل الملف، اضغط على زر التصدير ثم الحفظ.
+                        </p>
+                    </div>
+                </div>
+                
+                <div id="export-result" class="card rounded-lg shadow-md p-6 hidden">
+                    <div id="export-success" class="hidden">
+                        <div class="flex items-center mb-4 text-green-500">
+                            <i class="fas fa-check-circle text-2xl ml-2"></i>
+                            <h3 class="text-xl font-bold">تم تصدير البيانات بنجاح</h3>
+                        </div>
+                        <p class="mb-4">
+                            تم تجهيز البيانات المختارة للتصدير. لحفظ البيانات:
+                        </p>
+                        <ol class="list-decimal mr-6 mb-4 space-y-2">
+                            <li>انقر على زر "حفظ البيانات" أدناه</li>
+                            <li>انقر بزر الماوس الأيمن على النص</li>
+                            <li>اختر "حفظ باسم" أو "Save as" من القائمة</li>
+                            <li>اختر موقع الحفظ واكتب اسم الملف المناسب</li>
+                        </ol>
+                        <div class="mb-4">
+                            <button id="show-export-data" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                <i class="fas fa-save ml-1"></i> حفظ البيانات
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="export-data-content" class="hidden">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">بيانات التصدير</h3>
+                            <button id="close-export-data" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <pre id="final-export-content" class="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm overflow-x-auto" dir="ltr"></pre>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                انقر بزر الماوس الأيمن على النص أعلاه واختر "حفظ باسم" لتنزيل الملف.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم إدارة المستخدمين -->
+            <section id="users-section" class="section-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">إدارة المستخدمين</h2>
+                    <button id="add-user-button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        <i class="fas fa-plus ml-1"></i> مستخدم جديد
+                    </button>
+                </div>
+
+                <div class="card rounded-lg shadow-md p-6 mb-8">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">اسم المستخدم</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">البريد الإلكتروني</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">نوع المستخدم</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الحالة</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- سيتم إضافة البيانات هنا عن طريق جافاسكريبت -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- نافذة تسجيل الدخول -->
+    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">تسجيل الدخول</h3>
+                    <button id="close-login-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label for="login-username" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">اسم المستخدم</label>
+                        <input type="text" id="login-username" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="login-password" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">كلمة المرور</label>
+                        <input type="password" id="login-password" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div id="login-error" class="text-red-500 text-sm hidden"></div>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <input type="checkbox" id="login-remember" class="ml-1">
+                                تذكرني
+                            </label>
+                        </div>
+                        <button class="text-sm text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">نسيت كلمة المرور؟</button>
+                    </div>
+                    <button id="submit-login" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        تسجيل الدخول
+                    </button>
+                </div>
+                
+                <!-- تسجيل دخول تلقائي للعرض -->
+                <div class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">تسجيل دخول سريع (للعرض فقط):</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button data-username="admin" data-password="admin" class="quick-login bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-sm font-medium py-1 px-2 rounded">
+                            مدير النظام
+                        </button>
+                        <button data-username="doctor" data-password="doctor" class="quick-login bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-sm font-medium py-1 px-2 rounded">
+                            طبيب
+                        </button>
+                        <button data-username="reception" data-password="reception" class="quick-login bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-sm font-medium py-1 px-2 rounded">
+                            موظف استقبال
+                        </button>
+                        <button data-username="patient" data-password="patient" class="quick-login bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-sm font-medium py-1 px-2 rounded">
+                            مريض
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة موعد جديد -->
+    <div id="appointment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold" id="appointment-modal-title">إضافة موعد جديد</h3>
+                    <button id="close-appointment-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <input type="hidden" id="appointment-id">
+                    <div>
+                        <label for="appointment-patient" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">المريض</label>
+                        <select id="appointment-patient" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">اختر المريض</option>
+                            <!-- سيتم إضافة المرضى هنا عن طريق جافاسكريبت -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="appointment-doctor" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">الطبيب</label>
+                        <select id="appointment-doctor" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">اختر الطبيب</option>
+                            <!-- سيتم إضافة الأطباء هنا عن طريق جافاسكريبت -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="appointment-date" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">التاريخ</label>
+                        <input type="date" id="appointment-date" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="appointment-time" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">الوقت</label>
+                        <input type="time" id="appointment-time" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="appointment-reason" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">سبب الزيارة</label>
+                        <textarea id="appointment-reason" rows="3" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    </div>
+                    <div>
+                        <label for="appointment-status" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">الحالة</label>
+                        <select id="appointment-status" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="pending">قادم</option>
+                            <option value="completed">مكتمل</option>
+                            <option value="cancelled">ملغي</option>
+                        </select>
+                    </div>
+                    <div id="appointment-error" class="text-red-500 text-sm hidden"></div>
+                    <button id="save-appointment" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        حفظ الموعد
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة مريض جديد -->
+    <div id="patient-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold" id="patient-modal-title">إضافة مريض جديد</h3>
+                    <button id="close-patient-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <input type="hidden" id="patient-id">
+                    <div>
+                        <label for="patient-name" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">اسم المريض</label>
+                        <input type="text" id="patient-name" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="patient-phone" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">رقم الهاتف</label>
+                        <input type="tel" id="patient-phone" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="patient-email" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">البريد الإلكتروني</label>
+                        <input type="email" id="patient-email" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="patient-dob" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">تاريخ الميلاد</label>
+                        <input type="date" id="patient-dob" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="patient-gender" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">الجنس</label>
+                        <select id="patient-gender" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="male">ذكر</option>
+                            <option value="female">أنثى</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="patient-address" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">العنوان</label>
+                        <textarea id="patient-address" rows="2" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    </div>
+                    <div id="patient-error" class="text-red-500 text-sm hidden"></div>
+                    <button id="save-patient" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        حفظ بيانات المريض
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة طبيب جديد -->
+    <div id="doctor-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold" id="doctor-modal-title">إضافة طبيب جديد</h3>
+                    <button id="close-doctor-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <input type="hidden" id="doctor-id">
+                    <div>
+                        <label for="doctor-name" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">اسم الطبيب</label>
+                        <input type="text" id="doctor-name" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="doctor-specialty" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">التخصص</label>
+                        <input type="text" id="doctor-specialty" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="doctor-phone" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">رقم الهاتف</label>
+                        <input type="tel" id="doctor-phone" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="doctor-email" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">البريد الإلكتروني</label>
+                        <input type="email" id="doctor-email" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="doctor-schedule" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">أيام العمل</label>
+                        <div class="flex flex-wrap gap-2">
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox doctor-day" value="saturday" checked="">
+                                <span class="mr-2">السبت</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox doctor-day" value="sunday" checked="">
+                                <span class="mr-2">الأحد</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox doctor-day" value="monday" checked="">
+                                <span class="mr-2">الاثنين</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox doctor-day" value="tuesday" checked="">
+                                <span class="mr-2">الثلاثاء</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox doctor-day" value="wednesday" checked="">
+                                <span class="mr-2">الأربعاء</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox doctor-day" value="thursday">
+                                <span class="mr-2">الخميس</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox doctor-day" value="friday">
+                                <span class="mr-2">الجمعة</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label for="doctor-start-time" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">بداية الدوام</label>
+                            <input type="time" id="doctor-start-time" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" value="09:00">
+                        </div>
+                        <div class="flex-1">
+                            <label for="doctor-end-time" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">نهاية الدوام</label>
+                            <input type="time" id="doctor-end-time" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" value="17:00">
+                        </div>
+                    </div>
+                    <div id="doctor-error" class="text-red-500 text-sm hidden"></div>
+                    <button id="save-doctor" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        حفظ بيانات الطبيب
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة مستخدم جديد -->
+    <div id="user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold" id="user-modal-title">إضافة مستخدم جديد</h3>
+                    <button id="close-user-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <input type="hidden" id="user-id">
+                    <div>
+                        <label for="user-name" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">اسم المستخدم</label>
+                        <input type="text" id="user-name" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="user-email" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">البريد الإلكتروني</label>
+                        <input type="email" id="user-email" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="user-password" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">كلمة المرور</label>
+                        <input type="password" id="user-password" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="user-role" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">نوع المستخدم</label>
+                        <select id="user-role" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="admin">مدير النظام</option>
+                            <option value="doctor">طبيب</option>
+                            <option value="reception">موظف استقبال</option>
+                            <option value="patient">مريض</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="user-status" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">الحالة</label>
+                        <select id="user-status" class="text-base block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="active">نشط</option>
+                            <option value="inactive">غير نشط</option>
+                        </select>
+                    </div>
+                    <div id="user-permissions" class="space-y-2">
+                        <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">الصلاحيات</label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="form-checkbox user-permission" value="view_appointments" checked="">
+                            <span class="mr-2">عرض المواعيد</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="form-checkbox user-permission" value="manage_appointments" checked="">
+                            <span class="mr-2">إدارة المواعيد</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="form-checkbox user-permission" value="view_patients" checked="">
+                            <span class="mr-2">عرض المرضى</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="form-checkbox user-permission" value="manage_patients">
+                            <span class="mr-2">إدارة المرضى</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="form-checkbox user-permission" value="view_reports">
+                            <span class="mr-2">عرض التقارير</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="form-checkbox user-permission" value="export_data">
+                            <span class="mr-2">تصدير البيانات</span>
+                        </label>
+                    </div>
+                    <div id="user-error" class="text-red-500 text-sm hidden"></div>
+                    <button id="save-user" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        حفظ بيانات المستخدم
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة التأكيد -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold" id="confirm-title">تأكيد العملية</h3>
+                </div>
+                <p id="confirm-message" class="mb-6">هل أنت متأكد من رغبتك في إتمام هذه العملية؟</p>
+                <div class="flex justify-end space-x-4">
+                    <button id="confirm-cancel" class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        إلغاء
+                    </button>
+                    <button id="confirm-ok" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        تأكيد
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة حالة المزامنة -->
+    <div id="sync-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold">مزامنة البيانات</h3>
+                </div>
+                <div class="flex flex-col items-center justify-center py-4">
+                    <div id="sync-loading" class="text-center">
+                        <div class="loading-spinner mx-auto mb-4"></div>
+                        <p id="sync-message">جاري مزامنة البيانات، يرجى الانتظار...</p>
+                    </div>
+                    <div id="sync-complete" class="text-center hidden">
+                        <div class="text-green-500 text-5xl mb-4">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <p class="text-lg mb-4">تمت المزامنة بنجاح!</p>
+                        <p id="sync-details" class="text-sm text-gray-500 dark:text-gray-400"></p>
+                    </div>
+                    <div id="sync-error" class="text-center hidden">
+                        <div class="text-red-500 text-5xl mb-4">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <p class="text-lg mb-4">حدث خطأ أثناء المزامنة</p>
+                        <p id="sync-error-message" class="text-sm text-red-500"></p>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button id="close-sync-modal" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hidden">
+                        إغلاق
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // التحقق من وضع الألوان المفضل وتطبيقه
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // بيانات النظام (محاكاة قاعدة البيانات)
+        const DB = {
+            users: [
+                { id: 1, username: 'admin', password: 'admin', name: 'مدير النظام', email: 'admin@example.com', role: 'admin', status: 'active', permissions: ['view_appointments', 'manage_appointments', 'view_patients', 'manage_patients', 'view_reports', 'export_data', 'manage_users'] },
+                { id: 2, username: 'doctor', password: 'doctor', name: 'د. أحمد محمد', email: 'doctor@example.com', role: 'doctor', status: 'active', permissions: ['view_appointments', 'manage_appointments', 'view_patients', 'view_reports'] },
+                { id: 3, username: 'reception', password: 'reception', name: 'سارة علي', email: 'reception@example.com', role: 'reception', status: 'active', permissions: ['view_appointments', 'manage_appointments', 'view_patients', 'manage_patients'] },
+                { id: 4, username: 'patient', password: 'patient', name: 'محمد خالد', email: 'patient@example.com', role: 'patient', status: 'active', permissions: ['view_appointments'] }
+            ],
+            patients: [
+                { id: 1, name: 'محمد خالد', phone: '0501234567', email: 'mohamed@example.com', dob: '1985-05-15', gender: 'male', address: 'الرياض، حي النزهة' },
+                { id: 2, name: 'فاطمة أحمد', phone: '0559876543', email: 'fatima@example.com', dob: '1990-10-20', gender: 'female', address: 'جدة، حي الروضة' },
+                { id: 3, name: 'خالد عبدالله', phone: '0561234567', email: 'khaled@example.com', dob: '1978-03-10', gender: 'male', address: 'الدمام، حي الشاطئ' },
+                { id: 4, name: 'نورة سعد', phone: '0532345678', email: 'noura@example.com', dob: '1995-12-05', gender: 'female', address: 'الرياض، حي الملز' },
+                { id: 5, name: 'عبدالرحمن محمد', phone: '0549876543', email: 'abdulrahman@example.com', dob: '1982-07-25', gender: 'male', address: 'مكة، حي العزيزية' }
+            ],
+            doctors: [
+                { id: 1, name: 'د. أحمد محمد', specialty: 'طب عام', phone: '0555555555', email: 'ahmed@example.com', schedule: { days: ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday'], startTime: '09:00', endTime: '17:00' } },
+                { id: 2, name: 'د. سارة علي', specialty: 'أمراض باطنية', phone: '0566666666', email: 'sara@example.com', schedule: { days: ['saturday', 'sunday', 'monday', 'wednesday', 'thursday'], startTime: '10:00', endTime: '18:00' } },
+                { id: 3, name: 'د. محمد العمري', specialty: 'أطفال', phone: '0577777777', email: 'mohammed@example.com', schedule: { days: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday'], startTime: '08:00', endTime: '16:00' } }
+            ],
+            appointments: [
+                { id: 1, patientId: 1, doctorId: 1, date: '2023-10-15', time: '10:00', reason: 'فحص دوري', status: 'completed', notes: 'تم إجراء الفحص بنجاح' },
+                { id: 2, patientId: 2, doctorId: 1, date: '2023-10-16', time: '11:30', reason: 'مراجعة', status: 'completed', notes: 'بحاجة إلى متابعة بعد أسبوعين' },
+                { id: 3, patientId: 3, doctorId: 2, date: '2023-10-17', time: '14:00', reason: 'ألم في البطن', status: 'completed', notes: 'تم وصف الدواء المناسب' },
+                { id: 4, patientId: 4, doctorId: 3, date: '2023-10-18', time: '09:30', reason: 'متابعة', status: 'completed', notes: 'تحسن ملحوظ في الحالة' },
+                { id: 5, patientId: 5, doctorId: 2, date: '2023-10-18', time: '13:00', reason: 'صداع مزمن', status: 'cancelled', notes: 'تم إلغاء الموعد من قبل المريض' },
+                { id: 6, patientId: 1, doctorId: 1, date: todayDate(), time: '10:00', reason: 'فحص متابعة', status: 'pending', notes: '' },
+                { id: 7, patientId: 3, doctorId: 2, date: todayDate(), time: '14:30', reason: 'تحليل نتائج الفحوصات', status: 'pending', notes: '' },
+                { id: 8, patientId: 2, doctorId: 3, date: tomorrowDate(), time: '11:00', reason: 'استشارة', status: 'pending', notes: '' },
+                { id: 9, patientId: 4, doctorId: 1, date: tomorrowDate(), time: '15:00', reason: 'فحص دوري', status: 'pending', notes: '' }
+            ],
+            externalData: {
+                lastSync: null,
+                insuranceClaims: [],
+                financialData: [],
+                medicationUsage: []
+            },
+            nextId: {
+                users: 5,
+                patients: 6,
+                doctors: 4,
+                appointments: 10
+            }
+        };
+
+        // المستخدم الحالي
+        let currentUser = null;
+
+        // الوظائف المساعدة (Helper Functions)
+        function todayDate() {
+            const today = new Date();
+            return today.toISOString().split('T')[0];
+        }
+
+        function tomorrowDate() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return tomorrow.toISOString().split('T')[0];
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('ar-SA', options);
+        }
+
+        function formatTime(timeString) {
+            const timeParts = timeString.split(':');
+            const hours = parseInt(timeParts[0]);
+            const minutes = timeParts[1];
+            const ampm = hours >= 12 ? 'م' : 'ص';
+            const formattedHours = hours % 12 || 12;
+            return `${formattedHours}:${minutes} ${ampm}`;
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case 'pending':
+                    return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+                case 'completed':
+                    return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+                case 'cancelled':
+                    return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+                default:
+                    return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+            }
+        }
+
+        function getStatusText(status) {
+            switch (status) {
+                case 'pending':
+                    return 'قادم';
+                case 'completed':
+                    return 'مكتمل';
+                case 'cancelled':
+                    return 'ملغي';
+                case 'active':
+                    return 'نشط';
+                case 'inactive':
+                    return 'غير نشط';
+                default:
+                    return status;
+            }
+        }
+
+        function getRoleText(role) {
+            switch (role) {
+                case 'admin':
+                    return 'مدير النظام';
+                case 'doctor':
+                    return 'طبيب';
+                case 'reception':
+                    return 'موظف استقبال';
+                case 'patient':
+                    return 'مريض';
+                default:
+                    return role;
+            }
+        }
+
+        function getGenderText(gender) {
+            return gender === 'male' ? 'ذكر' : 'أنثى';
+        }
+
+        function getPatientById(id) {
+            return DB.patients.find(patient => patient.id === id);
+        }
+
+        function getDoctorById(id) {
+            return DB.doctors.find(doctor => doctor.id === id);
+        }
+
+        function getUserById(id) {
+            return DB.users.find(user => user.id === id);
+        }
+
+        function hasPermission(permission) {
+            if (!currentUser) return false;
+            return currentUser.permissions.includes(permission);
+        }
+
+        function checkUserAccess(roleString) {
+            if (!currentUser) return false;
+            const roles = roleString.split(',');
+            return roles.includes('all') || roles.includes(currentUser.role);
+        }
+
+        // تحديث لوحة التحكم
+        function updateDashboard() {
+            const today = todayDate();
+            
+            // عدد مواعيد اليوم
+            const todayAppointments = DB.appointments.filter(app => app.date === today);
+            document.getElementById('today-appointments-count').textContent = todayAppointments.length;
+            
+            // إجمالي المرضى
+            document.getElementById('total-patients-count').textContent = DB.patients.length;
+            
+            // عدد الأطباء
+            document.getElementById('total-doctors-count').textContent = DB.doctors.length;
+            
+            // المواعيد المنتظرة
+            const pendingAppointments = DB.appointments.filter(app => app.status === 'pending');
+            document.getElementById('pending-appointments-count').textContent = pendingAppointments.length;
+            
+            // جدول مواعيد اليوم
+            const todayAppointmentsTable = document.getElementById('today-appointments-table');
+            todayAppointmentsTable.innerHTML = '';
+            
+            if (todayAppointments.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="4" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400">لا توجد مواعيد لهذا اليوم</td>
+                `;
+                todayAppointmentsTable.appendChild(row);
+            } else {
+                todayAppointments.sort((a, b) => a.time.localeCompare(b.time)).forEach(appointment => {
+                    const patient = getPatientById(appointment.patientId);
+                    const doctor = getDoctorById(appointment.doctorId);
+                    
+                    if (patient && doctor) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-4 py-3 text-sm">${formatTime(appointment.time)}</td>
+                            <td class="px-4 py-3 text-sm">${patient.name}</td>
+                            <td class="px-4 py-3 text-sm">${doctor.name}</td>
+                            <td class="px-4 py-3 text-sm">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(appointment.status)}">
+                                    ${getStatusText(appointment.status)}
+                                </span>
+                            </td>
+                        `;
+                        todayAppointmentsTable.appendChild(row);
+                    }
+                });
+            }
+        }
+
+        // تحديث قائمة المواعيد
+        function updateAppointments(filters = {}) {
+            const appointmentsTable = document.getElementById('appointments-table');
+            appointmentsTable.innerHTML = '';
+            
+            let filteredAppointments = [...DB.appointments];
+            
+            // تطبيق الفلاتر
+            if (filters.date) {
+                filteredAppointments = filteredAppointments.filter(app => app.date === filters.date);
+            }
+            
+            if (filters.doctorId) {
+                filteredAppointments = filteredAppointments.filter(app => app.doctorId === parseInt(filters.doctorId));
+            }
+            
+            if (filters.status) {
+                filteredAppointments = filteredAppointments.filter(app => app.status === filters.status);
+            }
+            
+            // فلتر خاص بالمرضى (يرون مواعيدهم فقط)
+            if (currentUser && currentUser.role === 'patient') {
+                const patientUser = DB.patients.find(p => p.email === currentUser.email);
+                if (patientUser) {
+                    filteredAppointments = filteredAppointments.filter(app => app.patientId === patientUser.id);
+                }
+            }
+            
+            // ترتيب المواعيد حسب التاريخ والوقت
+            filteredAppointments.sort((a, b) => {
+                return a.date.localeCompare(b.date) || a.time.localeCompare(b.time);
+            });
+            
+            if (filteredAppointments.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="6" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400">لا توجد مواعيد مطابقة للفلاتر المحددة</td>
+                `;
+                appointmentsTable.appendChild(row);
+            } else {
+                filteredAppointments.forEach(appointment => {
+                    const patient = getPatientById(appointment.patientId);
+                    const doctor = getDoctorById(appointment.doctorId);
+                    
+                    if (patient && doctor) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-4 py-3 text-sm">${formatDate(appointment.date)}</td>
+                            <td class="px-4 py-3 text-sm">${formatTime(appointment.time)}</td>
+                            <td class="px-4 py-3 text-sm">${patient.name}</td>
+                            <td class="px-4 py-3 text-sm">${doctor.name}</td>
+                            <td class="px-4 py-3 text-sm">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(appointment.status)}">
+                                    ${getStatusText(appointment.status)}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                <div class="flex space-x-2">
+                                    <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 edit-appointment" data-id="${appointment.id}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 delete-appointment" data-id="${appointment.id}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        appointmentsTable.appendChild(row);
+                    }
+                });
+            }
+            
+            // إضافة مستمعي الأحداث للأزرار
+            document.querySelectorAll('.edit-appointment').forEach(button => {
+                button.addEventListener('click', () => editAppointment(parseInt(button.dataset.id)));
+            });
+            
+            document.querySelectorAll('.delete-appointment').forEach(button => {
+                button.addEventListener('click', () => deleteAppointment(parseInt(button.dataset.id)));
+            });
+        }
+
+        // تحديث قائمة المرضى
+        function updatePatients() {
+            const patientsTable = document.getElementById('patients-table');
+            patientsTable.innerHTML = '';
+            
+            if (DB.patients.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="6" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400">لا يوجد مرضى مسجلين</td>
+                `;
+                patientsTable.appendChild(row);
+            } else {
+                DB.patients.forEach(patient => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-4 py-3 text-sm">${patient.id}</td>
+                        <td class="px-4 py-3 text-sm">${patient.name}</td>
+                        <td class="px-4 py-3 text-sm">${patient.phone}</td>
+                        <td class="px-4 py-3 text-sm">${patient.email}</td>
+                        <td class="px-4 py-3 text-sm">${formatDate(patient.dob)}</td>
+                        <td class="px-4 py-3 text-sm">
+                            <div class="flex space-x-2">
+                                <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 edit-patient" data-id="${patient.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 delete-patient" data-id="${patient.id}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    patientsTable.appendChild(row);
+                });
+            }
+            
+            // إضافة مستمعي الأحداث للأزرار
+            document.querySelectorAll('.edit-patient').forEach(button => {
+                button.addEventListener('click', () => editPatient(parseInt(button.dataset.id)));
+            });
+            
+            document.querySelectorAll('.delete-patient').forEach(button => {
+                button.addEventListener('click', () => deletePatient(parseInt(button.dataset.id)));
+            });
+        }
+
+        // تحديث قائمة الأطباء
+        function updateDoctors() {
+            const doctorsCards = document.getElementById('doctors-cards');
+            doctorsCards.innerHTML = '';
+            
+            if (DB.doctors.length === 0) {
+                doctorsCards.innerHTML = `
+                    <div class="col-span-full text-center text-gray-500 dark:text-gray-400 py-8">
+                        لا يوجد أطباء مسجلين
+                    </div>
+                `;
+            } else {
+                DB.doctors.forEach(doctor => {
+                    const card = document.createElement('div');
+                    card.className = 'card rounded-lg shadow-md p-6 flex flex-col';
+                    
+                    // تحويل أيام العمل إلى نص عربي
+                    const dayNames = {
+                        saturday: 'السبت',
+                        sunday: 'الأحد',
+                        monday: 'الاثنين',
+                        tuesday: 'الثلاثاء',
+                        wednesday: 'الأربعاء',
+                        thursday: 'الخميس',
+                        friday: 'الجمعة'
+                    };
+                    
+                    const workDays = doctor.schedule.days.map(day => dayNames[day]).join('، ');
+                    
+                    card.innerHTML = `
+                        <div class="flex items-center mb-4">
+                            <div class="rounded-full bg-indigo-100 dark:bg-indigo-900 p-3 ml-4">
+                                <i class="fas fa-user-md text-indigo-500 dark:text-indigo-300 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold">${doctor.name}</h3>
+                                <p class="text-gray-500 dark:text-gray-400">${doctor.specialty}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 mb-4 flex-grow">
+                            <div class="flex items-start">
+                                <i class="fas fa-phone-alt text-gray-500 ml-2 mt-1"></i>
+                                <p>${doctor.phone}</p>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-envelope text-gray-500 ml-2 mt-1"></i>
+                                <p>${doctor.email}</p>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-calendar-alt text-gray-500 ml-2 mt-1"></i>
+                                <p>${workDays}</p>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-clock text-gray-500 ml-2 mt-1"></i>
+                                <p>${formatTime(doctor.schedule.startTime)} - ${formatTime(doctor.schedule.endTime)}</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-2 mt-2">
+                            <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 edit-doctor" data-id="${doctor.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 delete-doctor" data-id="${doctor.id}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    doctorsCards.appendChild(card);
+                });
+            }
+            
+            // إضافة مستمعي الأحداث للأزرار
+            document.querySelectorAll('.edit-doctor').forEach(button => {
+                button.addEventListener('click', () => editDoctor(parseInt(button.dataset.id)));
+            });
+            
+            document.querySelectorAll('.delete-doctor').forEach(button => {
+                button.addEventListener('click', () => deleteDoctor(parseInt(button.dataset.id)));
+            });
+            
+            // تحديث قائمة الأطباء في نافذة إضافة موعد
+            updateDoctorDropdowns();
+        }
+
+        // تحديث قائمة المستخدمين
+        function updateUsers() {
+            const usersTable = document.getElementById('users-table');
+            usersTable.innerHTML = '';
+            
+            if (DB.users.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="5" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400">لا يوجد مستخدمين مسجلين</td>
+                `;
+                usersTable.appendChild(row);
+            } else {
+                DB.users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-4 py-3 text-sm">${user.username}</td>
+                        <td class="px-4 py-3 text-sm">${user.email}</td>
+                        <td class="px-4 py-3 text-sm">${getRoleText(user.role)}</td>
+                        <td class="px-4 py-3 text-sm">
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'}">
+                                ${getStatusText(user.status)}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                            <div class="flex space-x-2">
+                                <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 edit-user" data-id="${user.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 delete-user" data-id="${user.id}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    usersTable.appendChild(row);
+                });
+            }
+            
+            // إضافة مستمعي الأحداث للأزرار
+            document.querySelectorAll('.edit-user').forEach(button => {
+                button.addEventListener('click', () => editUser(parseInt(button.dataset.id)));
+            });
+            
+            document.querySelectorAll('.delete-user').forEach(button => {
+                button.addEventListener('click', () => deleteUser(parseInt(button.dataset.id)));
+            });
+        }
+
+        // تحديث قوائم منسدلة المرضى والأطباء
+        function updatePatientDropdowns() {
+            const patientDropdowns = document.querySelectorAll('[id^="appointment-patient"]');
+            
+            patientDropdowns.forEach(dropdown => {
+                const currentValue = dropdown.value;
+                dropdown.innerHTML = '<option value="">اختر المريض</option>';
+                
+                DB.patients.forEach(patient => {
+                    const option = document.createElement('option');
+                    option.value = patient.id;
+                    option.textContent = patient.name;
+                    dropdown.appendChild(option);
+                });
+                
+                if (currentValue) {
+                    dropdown.value = currentValue;
+                }
+            });
+        }
+
+        function updateDoctorDropdowns() {
+            const doctorDropdowns = document.querySelectorAll('[id^="appointment-doctor"], [id^="filter-doctor"]');
+            
+            doctorDropdowns.forEach(dropdown => {
+                const currentValue = dropdown.value;
+                
+                // تعامل خاص مع dropdown الفلتر
+                if (dropdown.id === 'filter-doctor') {
+                    dropdown.innerHTML = '<option value="">الكل</option>';
+                } else {
+                    dropdown.innerHTML = '<option value="">اختر الطبيب</option>';
+                }
+                
+                DB.doctors.forEach(doctor => {
+                    const option = document.createElement('option');
+                    option.value = doctor.id;
+                    option.textContent = doctor.name;
+                    dropdown.appendChild(option);
+                });
+                
+                if (currentValue) {
+                    dropdown.value = currentValue;
+                }
+            });
+        }
+
+        // عرض وإخفاء الأقسام
+        function showSection(sectionId) {
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            document.getElementById(`${sectionId}-section`).classList.remove('hidden');
+            
+            // تحديث البيانات عند عرض القسم
+            switch (sectionId) {
+                case 'dashboard':
+                    updateDashboard();
+                    break;
+                case 'appointments':
+                    updateDoctorDropdowns();
+                    updatePatientDropdowns();
+                    updateAppointments();
+                    break;
+                case 'patients':
+                    updatePatients();
+                    break;
+                case 'doctors':
+                    updateDoctors();
+                    break;
+                case 'users':
+                    updateUsers();
+                    break;
+            }
+            
+            // إخفاء القائمة الجانبية في الشاشات الصغيرة بعد اختيار قسم
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.add('hidden');
+            }
+        }
+
+        // تحديث القائمة الجانبية بناءً على صلاحيات المستخدم
+        function updateSidebar() {
+            const navLinks = document.querySelectorAll('.nav-item');
+            
+            navLinks.forEach(link => {
+                const roles = link.dataset.role;
+                if (checkUserAccess(roles)) {
+                    link.classList.remove('hidden');
+                } else {
+                    link.classList.add('hidden');
+                }
+            });
+        }
+
+        // تحديث القائمة العلوية بناءً على حالة تسجيل الدخول
+        function updateUserMenu() {
+            const userMenuItems = document.getElementById('user-menu-items');
+            const currentUserName = document.getElementById('current-user-name');
+            
+            if (currentUser) {
+                currentUserName.textContent = currentUser.name;
+                userMenuItems.innerHTML = `
+                    <button id="logout-button" class="block w-full text-right px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">تسجيل الخروج</button>
+                `;
+                
+                // إضافة مستمع الحدث لزر تسجيل الخروج
+                document.getElementById('logout-button').addEventListener('click', logout);
+            } else {
+                currentUserName.textContent = 'تسجيل الدخول';
+                userMenuItems.innerHTML = `
+                    <button id="login-button" class="block w-full text-right px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">تسجيل الدخول</button>
+                `;
+                
+                // إضافة مستمع الحدث لزر تسجيل الدخول
+                document.getElementById('login-button').addEventListener('click', showLoginModal);
+            }
+        }
+
+        // وظائف الإضافة والتعديل والحذف
+        function addAppointment() {
+            document.getElementById('appointment-modal-title').textContent = 'إضافة موعد جديد';
+            document.getElementById('appointment-id').value = '';
+            document.getElementById('appointment-patient').value = '';
+            document.getElementById('appointment-doctor').value = '';
+            document.getElementById('appointment-date').value = '';
+            document.getElementById('appointment-time').value = '';
+            document.getElementById('appointment-reason').value = '';
+            document.getElementById('appointment-status').value = 'pending';
+            document.getElementById('appointment-error').classList.add('hidden');
+            
+            updatePatientDropdowns();
+            updateDoctorDropdowns();
+            
+            document.getElementById('appointment-modal').classList.remove('hidden');
+        }
+
+        function editAppointment(id) {
+            const appointment = DB.appointments.find(a => a.id === id);
+            if (!appointment) return;
+            
+            document.getElementById('appointment-modal-title').textContent = 'تعديل موعد';
+            document.getElementById('appointment-id').value = appointment.id;
+            document.getElementById('appointment-patient').value = appointment.patientId;
+            document.getElementById('appointment-doctor').value = appointment.doctorId;
+            document.getElementById('appointment-date').value = appointment.date;
+            document.getElementById('appointment-time').value = appointment.time;
+            document.getElementById('appointment-reason').value = appointment.reason;
+            document.getElementById('appointment-status').value = appointment.status;
+            document.getElementById('appointment-error').classList.add('hidden');
+            
+            updatePatientDropdowns();
+            updateDoctorDropdowns();
+            
+            document.getElementById('appointment-modal').classList.remove('hidden');
+        }
+
+        function saveAppointment() {
+            const id = document.getElementById('appointment-id').value;
+            const patientId = parseInt(document.getElementById('appointment-patient').value);
+            const doctorId = parseInt(document.getElementById('appointment-doctor').value);
+            const date = document.getElementById('appointment-date').value;
+            const time = document.getElementById('appointment-time').value;
+            const reason = document.getElementById('appointment-reason').value;
+            const status = document.getElementById('appointment-status').value;
+            
+            // التحقق من البيانات
+            if (!patientId || !doctorId || !date || !time || !reason) {
+                document.getElementById('appointment-error').textContent = 'يرجى ملء جميع الحقول المطلوبة';
+                document.getElementById('appointment-error').classList.remove('hidden');
+                return;
+            }
+            
+            if (id) {
+                // تعديل موعد موجود
+                const index = DB.appointments.findIndex(a => a.id === parseInt(id));
+                if (index !== -1) {
+                    DB.appointments[index] = {
+                        ...DB.appointments[index],
+                        patientId,
+                        doctorId,
+                        date,
+                        time,
+                        reason,
+                        status
+                    };
+                }
+            } else {
+                // إضافة موعد جديد
+                const newId = DB.nextId.appointments++;
+                DB.appointments.push({
+                    id: newId,
+                    patientId,
+                    doctorId,
+                    date,
+                    time,
+                    reason,
+                    status,
+                    notes: ''
+                });
+            }
+            
+            document.getElementById('appointment-modal').classList.add('hidden');
+            updateAppointments();
+            updateDashboard();
+        }
+
+        function deleteAppointment(id) {
+            const appointment = DB.appointments.find(a => a.id === id);
+            if (!appointment) return;
+            
+            document.getElementById('confirm-title').textContent = 'حذف موعد';
+            document.getElementById('confirm-message').textContent = 'هل أنت متأكد من رغبتك في حذف هذا الموعد؟';
+            
+            const confirmModal = document.getElementById('confirm-modal');
+            confirmModal.classList.remove('hidden');
+            
+            const okButton = document.getElementById('confirm-ok');
+            const cancelButton = document.getElementById('confirm-cancel');
+            
+            // إزالة مستمعي الأحداث السابقين
+            const okClone = okButton.cloneNode(true);
+            const cancelClone = cancelButton.cloneNode(true);
+            okButton.parentNode.replaceChild(okClone, okButton);
+            cancelButton.parentNode.replaceChild(cancelClone, cancelButton);
+            
+            // إضافة مستمعي أحداث جديدة
+            okClone.addEventListener('click', () => {
+                const index = DB.appointments.findIndex(a => a.id === id);
+                if (index !== -1) {
+                    DB.appointments.splice(index, 1);
+                }
+                
+                confirmModal.classList.add('hidden');
+                updateAppointments();
+                updateDashboard();
+            });
+            
+            cancelClone.addEventListener('click', () => {
+                confirmModal.classList.add('hidden');
+            });
+        }
+
+        function addPatient() {
+            document.getElementById('patient-modal-title').textContent = 'إضافة مريض جديد';
+            document.getElementById('patient-id').value = '';
+            document.getElementById('patient-name').value = '';
+            document.getElementById('patient-phone').value = '';
+            document.getElementById('patient-email').value = '';
+            document.getElementById('patient-dob').value = '';
+            document.getElementById('patient-gender').value = 'male';
+            document.getElementById('patient-address').value = '';
+            document.getElementById('patient-error').classList.add('hidden');
+            
+            document.getElementById('patient-modal').classList.remove('hidden');
+        }
+
+        function editPatient(id) {
+            const patient = getPatientById(id);
+            if (!patient) return;
+            
+            document.getElementById('patient-modal-title').textContent = 'تعديل بيانات المريض';
+            document.getElementById('patient-id').value = patient.id;
+            document.getElementById('patient-name').value = patient.name;
+            document.getElementById('patient-phone').value = patient.phone;
+            document.getElementById('patient-email').value = patient.email;
+            document.getElementById('patient-dob').value = patient.dob;
+            document.getElementById('patient-gender').value = patient.gender;
+            document.getElementById('patient-address').value = patient.address;
+            document.getElementById('patient-error').classList.add('hidden');
+            
+            document.getElementById('patient-modal').classList.remove('hidden');
+        }
+
+        function savePatient() {
+            const id = document.getElementById('patient-id').value;
+            const name = document.getElementById('patient-name').value.trim();
+            const phone = document.getElementById('patient-phone').value.trim();
+            const email = document.getElementById('patient-email').value.trim();
+            const dob = document.getElementById('patient-dob').value;
+            const gender = document.getElementById('patient-gender').value;
+            const address = document.getElementById('patient-address').value.trim();
+            
+            // التحقق من البيانات
+            if (!name || !phone || !email || !dob) {
+                document.getElementById('patient-error').textContent = 'يرجى ملء جميع الحقول المطلوبة';
+                document.getElementById('patient-error').classList.remove('hidden');
+                return;
+            }
+            
+            if (id) {
+                // تعديل مريض موجود
+                const index = DB.patients.findIndex(p => p.id === parseInt(id));
+                if (index !== -1) {
+                    DB.patients[index] = {
+                        ...DB.patients[index],
+                        name,
+                        phone,
+                        email,
+                        dob,
+                        gender,
+                        address
+                    };
+                }
+            } else {
+                // إضافة مريض جديد
+                const newId = DB.nextId.patients++;
+                DB.patients.push({
+                    id: newId,
+                    name,
+                    phone,
+                    email,
+                    dob,
+                    gender,
+                    address
+                });
+            }
+            
+            document.getElementById('patient-modal').classList.add('hidden');
+            updatePatients();
+            updatePatientDropdowns();
+            updateDashboard();
+        }
+
+        function deletePatient(id) {
+            const patient = getPatientById(id);
+            if (!patient) return;
+            
+            // التحقق مما إذا كان هناك مواعيد مرتبطة بهذا المريض
+            const hasAppointments = DB.appointments.some(a => a.patientId === id);
+            
+            document.getElementById('confirm-title').textContent = 'حذف مريض';
+            
+            if (hasAppointments) {
+                document.getElementById('confirm-message').textContent = 'هذا المريض لديه مواعيد مسجلة. حذف المريض سيؤدي إلى حذف جميع مواعيده أيضاً. هل تريد المتابعة؟';
+            } else {
+                document.getElementById('confirm-message').textContent = 'هل أنت متأكد من رغبتك في حذف هذا المريض؟';
+            }
+            
+            const confirmModal = document.getElementById('confirm-modal');
+            confirmModal.classList.remove('hidden');
+            
+            const okButton = document.getElementById('confirm-ok');
+            const cancelButton = document.getElementById('confirm-cancel');
+            
+            // إزالة مستمعي الأحداث السابقين
+            const okClone = okButton.cloneNode(true);
+            const cancelClone = cancelButton.cloneNode(true);
+            okButton.parentNode.replaceChild(okClone, okButton);
+            cancelButton.parentNode.replaceChild(cancelClone, cancelButton);
+            
+            // إضافة مستمعي أحداث جديدة
+            okClone.addEventListener('click', () => {
+                // حذف المريض
+                const index = DB.patients.findIndex(p => p.id === id);
+                if (index !== -1) {
+                    DB.patients.splice(index, 1);
+                }
+                
+                // حذف المواعيد المرتبطة بالمريض
+                if (hasAppointments) {
+                    DB.appointments = DB.appointments.filter(a => a.patientId !== id);
+                }
+                
+                confirmModal.classList.add('hidden');
+                updatePatients();
+                updatePatientDropdowns();
+                updateAppointments();
+                updateDashboard();
+            });
+            
+            cancelClone.addEventListener('click', () => {
+                confirmModal.classList.add('hidden');
+            });
+        }
+
+        function addDoctor() {
+            document.getElementById('doctor-modal-title').textContent = 'إضافة طبيب جديد';
+            document.getElementById('doctor-id').value = '';
+            document.getElementById('doctor-name').value = '';
+            document.getElementById('doctor-specialty').value = '';
+            document.getElementById('doctor-phone').value = '';
+            document.getElementById('doctor-email').value = '';
+            document.getElementById('doctor-start-time').value = '09:00';
+            document.getElementById('doctor-end-time').value = '17:00';
+            document.getElementById('doctor-error').classList.add('hidden');
+            
+            // تحديد أيام العمل الافتراضية
+            document.querySelectorAll('.doctor-day').forEach(checkbox => {
+                checkbox.checked = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday'].includes(checkbox.value);
+            });
+            
+            document.getElementById('doctor-modal').classList.remove('hidden');
+        }
+
+        function editDoctor(id) {
+            const doctor = getDoctorById(id);
+            if (!doctor) return;
+            
+            document.getElementById('doctor-modal-title').textContent = 'تعديل بيانات الطبيب';
+            document.getElementById('doctor-id').value = doctor.id;
+            document.getElementById('doctor-name').value = doctor.name;
+            document.getElementById('doctor-specialty').value = doctor.specialty;
+            document.getElementById('doctor-phone').value = doctor.phone;
+            document.getElementById('doctor-email').value = doctor.email;
+            document.getElementById('doctor-start-time').value = doctor.schedule.startTime;
+            document.getElementById('doctor-end-time').value = doctor.schedule.endTime;
+            document.getElementById('doctor-error').classList.add('hidden');
+            
+            // تحديد أيام العمل
+            document.querySelectorAll('.doctor-day').forEach(checkbox => {
+                checkbox.checked = doctor.schedule.days.includes(checkbox.value);
+            });
+            
+            document.getElementById('doctor-modal').classList.remove('hidden');
+        }
+
+        function saveDoctor() {
+            const id = document.getElementById('doctor-id').value;
+            const name = document.getElementById('doctor-name').value.trim();
+            const specialty = document.getElementById('doctor-specialty').value.trim();
+            const phone = document.getElementById('doctor-phone').value.trim();
+            const email = document.getElementById('doctor-email').value.trim();
+            const startTime = document.getElementById('doctor-start-time').value;
+            const endTime = document.getElementById('doctor-end-time').value;
+            
+            // جمع أيام العمل المحددة
+            const days = [];
+            document.querySelectorAll('.doctor-day:checked').forEach(checkbox => {
+                days.push(checkbox.value);
+            });
+            
+            // التحقق من البيانات
+            if (!name || !specialty || !phone || !email || days.length === 0) {
+                document.getElementById('doctor-error').textContent = 'يرجى ملء جميع الحقول المطلوبة وتحديد أيام العمل';
+                document.getElementById('doctor-error').classList.remove('hidden');
+                return;
+            }
+            
+            if (id) {
+                // تعديل طبيب موجود
+                const index = DB.doctors.findIndex(d => d.id === parseInt(id));
+                if (index !== -1) {
+                    DB.doctors[index] = {
+                        ...DB.doctors[index],
+                        name,
+                        specialty,
+                        phone,
+                        email,
+                        schedule: {
+                            days,
+                            startTime,
+                            endTime
+                        }
+                    };
+                }
+            } else {
+                // إضافة طبيب جديد
+                const newId = DB.nextId.doctors++;
+                DB.doctors.push({
+                    id: newId,
+                    name,
+                    specialty,
+                    phone,
+                    email,
+                    schedule: {
+                        days,
+                        startTime,
+                        endTime
+                    }
+                });
+            }
+            
+            document.getElementById('doctor-modal').classList.add('hidden');
+            updateDoctors();
+            updateDoctorDropdowns();
+            updateDashboard();
+        }
+
+        function deleteDoctor(id) {
+            const doctor = getDoctorById(id);
+            if (!doctor) return;
+            
+            // التحقق مما إذا كان هناك مواعيد مرتبطة بهذا الطبيب
+            const hasAppointments = DB.appointments.some(a => a.doctorId === id);
+            
+            document.getElementById('confirm-title').textContent = 'حذف طبيب';
+            
+            if (hasAppointments) {
+                document.getElementById('confirm-message').textContent = 'هذا الطبيب لديه مواعيد مسجلة. حذف الطبيب سيؤدي إلى حذف جميع مواعيده أيضاً. هل تريد المتابعة؟';
+            } else {
+                document.getElementById('confirm-message').textContent = 'هل أنت متأكد من رغبتك في حذف هذا الطبيب؟';
+            }
+            
+            const confirmModal = document.getElementById('confirm-modal');
+            confirmModal.classList.remove('hidden');
+            
+            const okButton = document.getElementById('confirm-ok');
+            const cancelButton = document.getElementById('confirm-cancel');
+            
+            // إزالة مستمعي الأحداث السابقين
+            const okClone = okButton.cloneNode(true);
+            const cancelClone = cancelButton.cloneNode(true);
+            okButton.parentNode.replaceChild(okClone, okButton);
+            cancelButton.parentNode.replaceChild(cancelClone, cancelButton);
+            
+            // إضافة مستمعي أحداث جديدة
+            okClone.addEventListener('click', () => {
+                // حذف الطبيب
+                const index = DB.doctors.findIndex(d => d.id === id);
+                if (index !== -1) {
+                    DB.doctors.splice(index, 1);
+                }
+                
+                // حذف المواعيد المرتبطة بالطبيب
+                if (hasAppointments) {
+                    DB.appointments = DB.appointments.filter(a => a.doctorId !== id);
+                }
+                
+                confirmModal.classList.add('hidden');
+                updateDoctors();
+                updateDoctorDropdowns();
+                updateAppointments();
+                updateDashboard();
+            });
+            
+            cancelClone.addEventListener('click', () => {
+                confirmModal.classList.add('hidden');
+            });
+        }
+
+        function addUser() {
+            document.getElementById('user-modal-title').textContent = 'إضافة مستخدم جديد';
+            document.getElementById('user-id').value = '';
+            document.getElementById('user-name').value = '';
+            document.getElementById('user-email').value = '';
+            document.getElementById('user-password').value = '';
+            document.getElementById('user-role').value = 'reception';
+            document.getElementById('user-status').value = 'active';
+            document.getElementById('user-error').classList.add('hidden');
+            
+            // تحديد الصلاحيات الافتراضية
+            document.querySelectorAll('.user-permission').forEach(checkbox => {
+                checkbox.checked = ['view_appointments', 'manage_appointments', 'view_patients'].includes(checkbox.value);
+            });
+            
+            document.getElementById('user-modal').classList.remove('hidden');
+        }
+
+        function editUser(id) {
+            const user = getUserById(id);
+            if (!user) return;
+            
+            document.getElementById('user-modal-title').textContent = 'تعديل بيانات المستخدم';
+            document.getElementById('user-id').value = user.id;
+            document.getElementById('user-name').value = user.name;
+            document.getElementById('user-email').value = user.email;
+            document.getElementById('user-password').value = '';
+            document.getElementById('user-role').value = user.role;
+            document.getElementById('user-status').value = user.status;
+            document.getElementById('user-error').classList.add('hidden');
+            
+            // تحديد الصلاحيات
+            document.querySelectorAll('.user-permission').forEach(checkbox => {
+                checkbox.checked = user.permissions.includes(checkbox.value);
+            });
+            
+            document.getElementById('user-modal').classList.remove('hidden');
+        }
+
+        function saveUser() {
+            const id = document.getElementById('user-id').value;
+            const name = document.getElementById('user-name').value.trim();
+            const email = document.getElementById('user-email').value.trim();
+            const password = document.getElementById('user-password').value;
+            const role = document.getElementById('user-role').value;
+            const status = document.getElementById('user-status').value;
+            
+            // جمع الصلاحيات المحددة
+            const permissions = [];
+            document.querySelectorAll('.user-permission:checked').forEach(checkbox => {
+                permissions.push(checkbox.value);
+            });
+            
+            // التحقق من البيانات
+            if (!name || !email || (!id && !password)) {
+                document.getElementById('user-error').textContent = 'يرجى ملء جميع الحقول المطلوبة';
+                document.getElementById('user-error').classList.remove('hidden');
+                return;
+            }
+            
+            if (id) {
+                // تعديل مستخدم موجود
+                const index = DB.users.findIndex(u => u.id === parseInt(id));
+                if (index !== -1) {
+                    const username = DB.users[index].username;
+                    
+                    DB.users[index] = {
+                        ...DB.users[index],
+                        name,
+                        email,
+                        role,
+                        status,
+                        permissions
+                    };
+                    
+                    // تحديث كلمة المرور فقط إذا تم إدخالها
+                    if (password) {
+                        DB.users[index].password = password;
+                    }
+                }
+            } else {
+                // إضافة مستخدم جديد
+                const newId = DB.nextId.users++;
+                const username = email.split('@')[0]; // استخدام الجزء الأول من البريد الإلكتروني كاسم مستخدم افتراضي
+                
+                DB.users.push({
+                    id: newId,
+                    username,
+                    password,
+                    name,
+                    email,
+                    role,
+                    status,
+                    permissions
+                });
+            }
+            
+            document.getElementById('user-modal').classList.add('hidden');
+            updateUsers();
+        }
+
+        function deleteUser(id) {
+            const user = getUserById(id);
+            if (!user) return;
+            
+            document.getElementById('confirm-title').textContent = 'حذف مستخدم';
+            document.getElementById('confirm-message').textContent = `هل أنت متأكد من رغبتك في حذف المستخدم "${user.name}"؟`;
+            
+            const confirmModal = document.getElementById('confirm-modal');
+            confirmModal.classList.remove('hidden');
+            
+            const okButton = document.getElementById('confirm-ok');
+            const cancelButton = document.getElementById('confirm-cancel');
+            
+            // إزالة مستمعي الأحداث السابقين
+            const okClone = okButton.cloneNode(true);
+            const cancelClone = cancelButton.cloneNode(true);
+            okButton.parentNode.replaceChild(okClone, okButton);
+            cancelButton.parentNode.replaceChild(cancelClone, cancelButton);
+            
+            // إضافة مستمعي أحداث جديدة
+            okClone.addEventListener('click', () => {
+                const index = DB.users.findIndex(u => u.id === id);
+                if (index !== -1) {
+                    DB.users.splice(index, 1);
+                }
+                
+                confirmModal.classList.add('hidden');
+                updateUsers();
+            });
+            
+            cancelClone.addEventListener('click', () => {
+                confirmModal.classList.add('hidden');
+            });
+        }
+
+        // وظائف التقارير
+        function generateReport(reportType) {
+            const reportTitle = document.getElementById('report-title');
+            const reportContent = document.getElementById('report-content');
+            
+            // إعداد محتوى التقرير بناءً على النوع
+            switch (reportType) {
+                case 'appointments-summary':
+                    reportTitle.textContent = 'ملخص المواعيد';
+                    
+                    // إحصائيات المواعيد
+                    const totalAppointments = DB.appointments.length;
+                    const completedAppointments = DB.appointments.filter(a => a.status === 'completed').length;
+                    const pendingAppointments = DB.appointments.filter(a => a.status === 'pending').length;
+                    const cancelledAppointments = DB.appointments.filter(a => a.status === 'cancelled').length;
+                    
+                    // عدد المواعيد لكل طبيب
+                    const doctorAppointments = {};
+                    DB.doctors.forEach(doctor => {
+                        doctorAppointments[doctor.id] = DB.appointments.filter(a => a.doctorId === doctor.id).length;
+                    });
+                    
+                    // إنشاء محتوى التقرير
+                    let doctorAppointmentsHtml = '';
+                    Object.keys(doctorAppointments).forEach(doctorId => {
+                        const doctor = getDoctorById(parseInt(doctorId));
+                        if (doctor) {
+                            doctorAppointmentsHtml += `
+                                <tr>
+                                    <td class="border px-4 py-2">${doctor.name}</td>
+                                    <td class="border px-4 py-2">${doctorAppointments[doctorId]}</td>
+                                </tr>
+                            `;
+                        }
+                    });
+                    
+                    reportContent.innerHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                <h4 class="text-lg font-semibold mb-2">إجمالي المواعيد</h4>
+                                <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">${totalAppointments}</p>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                <h4 class="text-lg font-semibold mb-2">مواعيد مكتملة</h4>
+                                <p class="text-3xl font-bold text-green-600 dark:text-green-400">${completedAppointments}</p>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                <h4 class="text-lg font-semibold mb-2">مواعيد قادمة</h4>
+                                <p class="text-3xl font-bold text-yellow-600 dark:text-yellow-400">${pendingAppointments}</p>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                <h4 class="text-lg font-semibold mb-2">مواعيد ملغاة</h4>
+                                <p class="text-3xl font-bold text-red-600 dark:text-red-400">${cancelledAppointments}</p>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold mb-2">توزيع المواعيد حسب الطبيب</h4>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                                <thead>
+                                    <tr>
+                                        <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">اسم الطبيب</th>
+                                        <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">عدد المواعيد</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${doctorAppointmentsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'doctors-performance':
+                    reportTitle.textContent = 'أداء الأطباء';
+                    
+                    // إحصائيات لكل طبيب
+                    const doctorsPerformance = [];
+                    
+                    DB.doctors.forEach(doctor => {
+                        const doctorAppointments = DB.appointments.filter(a => a.doctorId === doctor.id);
+                        const completed = doctorAppointments.filter(a => a.status === 'completed').length;
+                        const cancelled = doctorAppointments.filter(a => a.status === 'cancelled').length;
+                        const pending = doctorAppointments.filter(a => a.status === 'pending').length;
+                        const total = doctorAppointments.length;
+                        
+                        doctorsPerformance.push({
+                            doctor,
+                            completed,
+                            cancelled,
+                            pending,
+                            total,
+                            completionRate: total > 0 ? Math.round((completed / total) * 100) : 0
+                        });
+                    });
+                    
+                    // إنشاء محتوى التقرير
+                    let doctorsPerformanceHtml = '';
+                    doctorsPerformance.forEach(item => {
+                        doctorsPerformanceHtml += `
+                            <tr>
+                                <td class="border px-4 py-2">${item.doctor.name}</td>
+                                <td class="border px-4 py-2">${item.doctor.specialty}</td>
+                                <td class="border px-4 py-2">${item.total}</td>
+                                <td class="border px-4 py-2">${item.completed}</td>
+                                <td class="border px-4 py-2">${item.pending}</td>
+                                <td class="border px-4 py-2">${item.cancelled}</td>
+                                <td class="border px-4 py-2">${item.completionRate}%</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    reportContent.innerHTML = `
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                                <thead>
+                                    <tr>
+                                        <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">اسم الطبيب</th>
+                                        <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">التخصص</th>
+                                        <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">إجمالي المواعيد</th>
+                                        <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">مكتملة</th>
+                                        <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">قادمة</th>
+                                        <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">ملغاة</th>
+                                        <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">معدل الإكمال</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${doctorsPerformanceHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'patients-statistics':
+                    reportTitle.textContent = 'إحصائيات المرضى';
+                    
+                    // توزيع المرضى حسب الجنس
+                    const malePatients = DB.patients.filter(p => p.gender === 'male').length;
+                    const femalePatients = DB.patients.filter(p => p.gender === 'female').length;
+                    
+                    // توزيع المرضى حسب الفئة العمرية
+                    const now = new Date();
+                    const ageGroups = {
+                        'أقل من 18': 0,
+                        '18-30': 0,
+                        '31-45': 0,
+                        '46-60': 0,
+                        'أكثر من 60': 0
+                    };
+                    
+                    DB.patients.forEach(patient => {
+                        const birthDate = new Date(patient.dob);
+                        const age = now.getFullYear() - birthDate.getFullYear();
+                        
+                        if (age < 18) ageGroups['أقل من 18']++;
+                        else if (age <= 30) ageGroups['18-30']++;
+                        else if (age <= 45) ageGroups['31-45']++;
+                        else if (age <= 60) ageGroups['46-60']++;
+                        else ageGroups['أكثر من 60']++;
+                    });
+                    
+                    // قائمة المرضى الأكثر زيارة
+                    const patientVisits = {};
+                    DB.patients.forEach(patient => {
+                        patientVisits[patient.id] = DB.appointments.filter(a => a.patientId === patient.id).length;
+                    });
+                    
+                    // ترتيب المرضى تنازلياً حسب عدد الزيارات
+                    const topPatients = Object.keys(patientVisits)
+                        .map(id => ({
+                            patient: getPatientById(parseInt(id)),
+                            visits: patientVisits[id]
+                        }))
+                        .sort((a, b) => b.visits - a.visits)
+                        .slice(0, 5); // أخذ أعلى 5 مرضى
+                    
+                    // إنشاء جدول المرضى الأكثر زيارة
+                    let topPatientsHtml = '';
+                    topPatients.forEach(item => {
+                        if (item.patient) {
+                            topPatientsHtml += `
+                                <tr>
+                                    <td class="border px-4 py-2">${item.patient.name}</td>
+                                    <td class="border px-4 py-2">${item.visits}</td>
+                                </tr>
+                            `;
+                        }
+                    });
+                    
+                    reportContent.innerHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                <h4 class="text-lg font-semibold mb-4">توزيع المرضى حسب الجنس</h4>
+                                <div class="flex">
+                                    <div class="flex-1 text-center">
+                                        <i class="fas fa-male text-4xl text-blue-500 mb-2"></i>
+                                        <p class="text-xl font-bold">${malePatients}</p>
+                                        <p class="text-gray-500 dark:text-gray-400">ذكور</p>
+                                    </div>
+                                    <div class="flex-1 text-center">
+                                        <i class="fas fa-female text-4xl text-pink-500 mb-2"></i>
+                                        <p class="text-xl font-bold">${femalePatients}</p>
+                                        <p class="text-gray-500 dark:text-gray-400">إناث</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                <h4 class="text-lg font-semibold mb-4">توزيع المرضى حسب الفئة العمرية</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex justify-between">
+                                        <span>أقل من 18:</span>
+                                        <span class="font-bold">${ageGroups['أقل من 18']}</span>
+                                    </li>
+                                    <li class="flex justify-between">
+                                        <span>18-30:</span>
+                                        <span class="font-bold">${ageGroups['18-30']}</span>
+                                    </li>
+                                    <li class="flex justify-between">
+                                        <span>31-45:</span>
+                                        <span class="font-bold">${ageGroups['31-45']}</span>
+                                    </li>
+                                    <li class="flex justify-between">
+                                        <span>46-60:</span>
+                                        <span class="font-bold">${ageGroups['46-60']}</span>
+                                    </li>
+                                    <li class="flex justify-between">
+                                        <span>أكثر من 60:</span>
+                                        <span class="font-bold">${ageGroups['أكثر من 60']}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold mb-2">المرضى الأكثر زيارة</h4>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                                <thead>
+                                    <tr>
+                                        <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">اسم المريض</th>
+                                        <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">عدد الزيارات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${topPatientsHtml || '<tr><td colspan="2" class="border px-4 py-2 text-center">لا توجد بيانات</td></tr>'}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'insurance-claims':
+                    reportTitle.textContent = 'مطالبات التأمين';
+                    
+                    if (!DB.externalData.insuranceClaims || DB.externalData.insuranceClaims.length === 0) {
+                        reportContent.innerHTML = `
+                            <div class="text-center py-8">
+                                <i class="fas fa-info-circle text-4xl text-gray-400 mb-4"></i>
+                                <p class="mb-4">لا توجد بيانات مطالبات تأمين متاحة</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">يرجى مزامنة البيانات الخارجية أولاً</p>
+                            </div>
+                        `;
+                    } else {
+                        let claimsHtml = '';
+                        DB.externalData.insuranceClaims.forEach(claim => {
+                            const patient = getPatientById(claim.patientId);
+                            const patientName = patient ? patient.name : 'غير معروف';
+                            
+                            claimsHtml += `
+                                <tr>
+                                    <td class="border px-4 py-2">${claim.claimId}</td>
+                                    <td class="border px-4 py-2">${patientName}</td>
+                                    <td class="border px-4 py-2">${claim.insuranceProvider}</td>
+                                    <td class="border px-4 py-2">${claim.amount.toFixed(2)} ريال</td>
+                                    <td class="border px-4 py-2">${formatDate(claim.date)}</td>
+                                    <td class="border px-4 py-2">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                            claim.status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
+                                            claim.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' :
+                                            'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                                        }">
+                                            ${
+                                                claim.status === 'approved' ? 'مقبولة' :
+                                                claim.status === 'pending' ? 'قيد المراجعة' :
+                                                'مرفوضة'
+                                            }
+                                        </span>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        
+                        // حساب إجماليات المطالبات
+                        const totalClaims = DB.externalData.insuranceClaims.length;
+                        const approvedClaims = DB.externalData.insuranceClaims.filter(c => c.status === 'approved').length;
+                        const pendingClaims = DB.externalData.insuranceClaims.filter(c => c.status === 'pending').length;
+                        const rejectedClaims = DB.externalData.insuranceClaims.filter(c => c.status === 'rejected').length;
+                        
+                        const totalAmount = DB.externalData.insuranceClaims.reduce((sum, claim) => sum + claim.amount, 0);
+                        const approvedAmount = DB.externalData.insuranceClaims.filter(c => c.status === 'approved').reduce((sum, claim) => sum + claim.amount, 0);
+                        
+                        reportContent.innerHTML = `
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                    <h4 class="text-sm font-semibold mb-2">إجمالي المطالبات</h4>
+                                    <p class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">${totalClaims}</p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                    <h4 class="text-sm font-semibold mb-2">المطالبات المقبولة</h4>
+                                    <p class="text-2xl font-bold text-green-600 dark:text-green-400">${approvedClaims}</p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                    <h4 class="text-sm font-semibold mb-2">قيد المراجعة</h4>
+                                    <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">${pendingClaims}</p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                    <h4 class="text-sm font-semibold mb-2">المطالبات المرفوضة</h4>
+                                    <p class="text-2xl font-bold text-red-600 dark:text-red-400">${rejectedClaims}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                    <h4 class="text-sm font-semibold mb-2">إجمالي قيمة المطالبات</h4>
+                                    <p class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">${totalAmount.toFixed(2)} ريال</p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                    <h4 class="text-sm font-semibold mb-2">إجمالي المبالغ المقبولة</h4>
+                                    <p class="text-2xl font-bold text-green-600 dark:text-green-400">${approvedAmount.toFixed(2)} ريال</p>
+                                </div>
+                            </div>
+                            
+                            <h4 class="text-lg font-semibold mb-2">تفاصيل المطالبات</h4>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                                    <thead>
+                                        <tr>
+                                            <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">رقم المطالبة</th>
+                                            <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">اسم المريض</th>
+                                            <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">شركة التأمين</th>
+                                            <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">المبلغ</th>
+                                            <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">التاريخ</th>
+                                            <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">الحالة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${claimsHtml}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    }
+                    break;
+                    
+                case 'financial-summary':
+                    reportTitle.textContent = 'ملخص مالي';
+                    
+                    if (!DB.externalData.financialData || Object.keys(DB.externalData.financialData).length === 0) {
+                        reportContent.innerHTML = `
+                            <div class="text-center py-8">
+                                <i class="fas fa-info-circle text-4xl text-gray-400 mb-4"></i>
+                                <p class="mb-4">لا توجد بيانات مالية متاحة</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">يرجى مزامنة البيانات الخارجية أولاً</p>
+                            </div>
+                        `;
+                    } else {
+                        const financialData = DB.externalData.financialData;
+                        
+                        // إجماليات المالية
+                        const totalRevenue = financialData.totalRevenue || 0;
+                        const totalExpenses = financialData.totalExpenses || 0;
+                        const netProfit = totalRevenue - totalExpenses;
+                        
+                        // تفاصيل الإيرادات
+                        let revenueBreakdownHtml = '';
+                        if (financialData.revenueBreakdown) {
+                            Object.entries(financialData.revenueBreakdown).forEach(([category, amount]) => {
+                                revenueBreakdownHtml += `
+                                    <tr>
+                                        <td class="border px-4 py-2">${category}</td>
+                                        <td class="border px-4 py-2">${amount.toFixed(2)} ريال</td>
+                                        <td class="border px-4 py-2">${((amount / totalRevenue) * 100).toFixed(1)}%</td>
+                                    </tr>
+                                `;
+                            });
+                        }
+                        
+                        // تفاصيل المصروفات
+                        let expensesBreakdownHtml = '';
+                        if (financialData.expensesBreakdown) {
+                            Object.entries(financialData.expensesBreakdown).forEach(([category, amount]) => {
+                                expensesBreakdownHtml += `
+                                    <tr>
+                                        <td class="border px-4 py-2">${category}</td>
+                                        <td class="border px-4 py-2">${amount.toFixed(2)} ريال</td>
+                                        <td class="border px-4 py-2">${((amount / totalExpenses) * 100).toFixed(1)}%</td>
+                                    </tr>
+                                `;
+                            });
+                        }
+                        
+                        reportContent.innerHTML = `
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                    <h4 class="text-sm font-semibold mb-2">إجمالي الإيرادات</h4>
+                                    <p class="text-2xl font-bold text-green-600 dark:text-green-400">${totalRevenue.toFixed(2)} ريال</p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                    <h4 class="text-sm font-semibold mb-2">إجمالي المصروفات</h4>
+                                    <p class="text-2xl font-bold text-red-600 dark:text-red-400">${totalExpenses.toFixed(2)} ريال</p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                                    <h4 class="text-sm font-semibold mb-2">صافي الربح</h4>
+                                    <p class="text-2xl font-bold ${netProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}">${netProfit.toFixed(2)} ريال</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">تفاصيل الإيرادات</h4>
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                                            <thead>
+                                                <tr>
+                                                    <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">الفئة</th>
+                                                    <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">المبلغ</th>
+                                                    <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">النسبة</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${revenueBreakdownHtml || '<tr><td colspan="3" class="border px-4 py-2 text-center">لا توجد بيانات</td></tr>'}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">تفاصيل المصروفات</h4>
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                                            <thead>
+                                                <tr>
+                                                    <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">الفئة</th>
+                                                    <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">المبلغ</th>
+                                                    <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">النسبة</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${expensesBreakdownHtml || '<tr><td colspan="3" class="border px-4 py-2 text-center">لا توجد بيانات</td></tr>'}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                فترة التقرير: ${formatDate(financialData.periodStart || todayDate())} - ${formatDate(financialData.periodEnd || todayDate())}
+                            </p>
+                        `;
+                    }
+                    break;
+                    
+                case 'medication-usage':
+                    reportTitle.textContent = 'استخدام الأدوية';
+                    
+                    if (!DB.externalData.medicationUsage || DB.externalData.medicationUsage.length === 0) {
+                        reportContent.innerHTML = `
+                            <div class="text-center py-8">
+                                <i class="fas fa-info-circle text-4xl text-gray-400 mb-4"></i>
+                                <p class="mb-4">لا توجد بيانات استخدام أدوية متاحة</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">يرجى مزامنة البيانات الخارجية أولاً</p>
+                            </div>
+                        `;
+                    } else {
+                        // ترتيب الأدوية حسب الاستخدام
+                        const sortedMedications = [...DB.externalData.medicationUsage].sort((a, b) => b.prescriptionCount - a.prescriptionCount);
+                        
+                        // إنشاء جدول الأدوية
+                        let medicationsHtml = '';
+                        sortedMedications.forEach(med => {
+                            medicationsHtml += `
+                                <tr>
+                                    <td class="border px-4 py-2">${med.name}</td>
+                                    <td class="border px-4 py-2">${med.category}</td>
+                                    <td class="border px-4 py-2">${med.prescriptionCount}</td>
+                                    <td class="border px-4 py-2">${med.stockLevel}</td>
+                                    <td class="border px-4 py-2">${med.unitPrice.toFixed(2)} ريال</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        // تحديد الأدوية المنخفضة في المخزون
+                        const lowStockMeds = sortedMedications.filter(med => med.stockLevel < 10);
+                        let lowStockHtml = '';
+                        
+                        if (lowStockMeds.length > 0) {
+                            lowStockMeds.forEach(med => {
+                                lowStockHtml += `
+                                    <tr>
+                                        <td class="border px-4 py-2">${med.name}</td>
+                                        <td class="border px-4 py-2">${med.stockLevel}</td>
+                                        <td class="border px-4 py-2">
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${med.stockLevel < 5 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'}">
+                                                ${med.stockLevel < 5 ? 'منخفض جداً' : 'منخفض'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+                        } else {
+                            lowStockHtml = `<tr><td colspan="3" class="border px-4 py-2 text-center">لا توجد أدوية منخفضة المخزون</td></tr>`;
+                        }
+                        
+                        // تحديد أكثر الفئات استخداماً
+                        const categoryUsage = {};
+                        sortedMedications.forEach(med => {
+                            categoryUsage[med.category] = (categoryUsage[med.category] || 0) + med.prescriptionCount;
+                        });
+                        
+                        const sortedCategories = Object.entries(categoryUsage)
+                            .sort((a, b) => b[1] - a[1])
+                            .slice(0, 5);
+                        
+                        let categoriesHtml = '';
+                        sortedCategories.forEach(([category, count]) => {
+                            categoriesHtml += `
+                                <tr>
+                                    <td class="border px-4 py-2">${category}</td>
+                                    <td class="border px-4 py-2">${count}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        reportContent.innerHTML = `
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">الأدوية منخفضة المخزون</h4>
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                                            <thead>
+                                                <tr>
+                                                    <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">اسم الدواء</th>
+                                                    <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">المخزون المتبقي</th>
+                                                    <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">الحالة</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${lowStockHtml}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">أكثر فئات الأدوية استخداماً</h4>
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                                            <thead>
+                                                <tr>
+                                                    <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">الفئة</th>
+                                                    <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">عدد الوصفات</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${categoriesHtml}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h4 class="text-lg font-semibold mb-2">قائمة الأدوية</h4>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                                    <thead>
+                                        <tr>
+                                            <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">اسم الدواء</th>
+                                            <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">الفئة</th>
+                                            <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">عدد الوصفات</th>
+                                            <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">المخزون</th>
+                                            <th class="border px-4 py-2 bg-gray-100 dark:bg-gray-700">سعر الوحدة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${medicationsHtml}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    }
+                    break;
+                    
+                default:
+                    reportContent.innerHTML = `
+                        <div class="text-center py-8">
+                            <i class="fas fa-exclamation-circle text-4xl text-yellow-500 mb-4"></i>
+                            <p>التقرير غير متوفر</p>
+                        </div>
+                    `;
+            }
+            
+            // عرض التقرير
+            document.getElementById('report-result').classList.remove('hidden');
+        }
+
+        // محاكاة مزامنة البيانات الخارجية
+        function syncExternalData() {
+            const syncModal = document.getElementById('sync-modal');
+            const syncLoading = document.getElementById('sync-loading');
+            const syncComplete = document.getElementById('sync-complete');
+            const syncError = document.getElementById('sync-error');
+            const closeButton = document.getElementById('close-sync-modal');
+            
+            syncModal.classList.remove('hidden');
+            syncLoading.classList.remove('hidden');
+            syncComplete.classList.add('hidden');
+            syncError.classList.add('hidden');
+            closeButton.classList.add('hidden');
+            
+            // محاكاة عملية المزامنة
+            setTimeout(() => {
+                // احتمالية وجود خطأ (للعرض فقط)
+                const hasError = Math.random() < 0.1; // 10% احتمالية وجود خطأ
+                
+                if (hasError) {
+                    syncLoading.classList.add('hidden');
+                    syncError.classList.remove('hidden');
+                    document.getElementById('sync-error-message').textContent = 'فشل الاتصال بقاعدة البيانات الخارجية. يرجى المحاولة مرة أخرى.';
+                    closeButton.classList.remove('hidden');
+                    return;
+                }
+                
+                // إنشاء بيانات خارجية عشوائية
+                generateExternalData();
+                
+                // تحديث آخر وقت مزامنة
+                DB.externalData.lastSync = new Date().toISOString();
+                document.getElementById('last-sync-time').textContent = new Date().toLocaleString('ar-SA');
+                
+                // عرض رسالة النجاح
+                syncLoading.classList.add('hidden');
+                syncComplete.classList.remove('hidden');
+                document.getElementById('sync-details').textContent = `تمت إضافة ${DB.externalData.insuranceClaims.length} مطالبة تأمين، وتحديث البيانات المالية وبيانات الأدوية`;
+                closeButton.classList.remove('hidden');
+            }, 2000);
+        }
+
+        // إنشاء بيانات خارجية عشوائية
+        function generateExternalData() {
+            // مطالبات التأمين
+            const insuranceProviders = ['شركة التأمين الصحي المتحدة', 'شركة الضمان للتأمين', 'شركة الرعاية الصحية'];
+            const claimStatuses = ['approved', 'pending', 'rejected'];
+            
+            DB.externalData.insuranceClaims = [];
+            
+            for (let i = 1; i <= 12; i++) {
+                const randomPatientId = DB.patients[Math.floor(Math.random() * DB.patients.length)].id;
+                const randomProvider = insuranceProviders[Math.floor(Math.random() * insuranceProviders.length)];
+                const randomStatus = claimStatuses[Math.floor(Math.random() * claimStatuses.length)];
+                const randomAmount = Math.floor(Math.random() * 5000) + 500;
+                
+                // إنشاء تاريخ عشوائي في آخر 60 يوم
+                const randomDate = new Date();
+                randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 60));
+                
+                DB.externalData.insuranceClaims.push({
+                    claimId: `INS-${1000 + i}`,
+                    patientId: randomPatientId,
+                    insuranceProvider: randomProvider,
+                    amount: randomAmount,
+                    date: randomDate.toISOString().split('T')[0],
+                    status: randomStatus,
+                    details: 'تفاصيل المطالبة'
+                });
+            }
+            
+            // البيانات المالية
+            const today = new Date();
+            const sixMonthsAgo = new Date();
+            sixMonthsAgo.setMonth(today.getMonth() - 6);
+            
+            DB.externalData.financialData = {
+                periodStart: sixMonthsAgo.toISOString().split('T')[0],
+                periodEnd: today.toISOString().split('T')[0],
+                totalRevenue: Math.floor(Math.random() * 500000) + 200000,
+                totalExpenses: Math.floor(Math.random() * 300000) + 100000,
+                revenueBreakdown: {
+                    'الكشوفات والاستشارات': Math.floor(Math.random() * 200000) + 100000,
+                    'العمليات الجراحية': Math.floor(Math.random() * 150000) + 50000,
+                    'الأشعة والتحاليل': Math.floor(Math.random() * 80000) + 30000,
+                    'العلاج الطبيعي': Math.floor(Math.random() * 30000) + 10000,
+                    'خدمات أخرى': Math.floor(Math.random() * 20000) + 5000
+                },
+                expensesBreakdown: {
+                    'رواتب ومكافآت': Math.floor(Math.random() * 150000) + 80000,
+                    'الأدوية والمستلزمات الطبية': Math.floor(Math.random() * 80000) + 40000,
+                    'الإيجار والمرافق': Math.floor(Math.random() * 40000) + 20000,
+                    'الصيانة': Math.floor(Math.random() * 20000) + 5000,
+                    'مصروفات أخرى': Math.floor(Math.random() * 15000) + 5000
+                }
+            };
+            
+            // بيانات الأدوية
+            const medications = [
+                { name: 'باراسيتامول', category: 'مسكنات' },
+                { name: 'أموكسيسيلين', category: 'مضادات حيوية' },
+                { name: 'إيبوبروفين', category: 'مضادات التهاب' },
+                { name: 'لوراتادين', category: 'مضادات الهستامين' },
+                { name: 'أتورفاستاتين', category: 'خافضات الكوليسترول' },
+                { name: 'أملوديبين', category: 'خافضات ضغط الدم' },
+                { name: 'ميتفورمين', category: 'أدوية السكري' },
+                { name: 'سيتريزين', category: 'مضادات الهستامين' },
+                { name: 'أزيثرومايسين', category: 'مضادات حيوية' },
+                { name: 'سالبوتامول', category: 'موسعات الشعب الهوائية' },
+                { name: 'فلوكستين', category: 'مضادات الاكتئاب' },
+                { name: 'ديكساميثازون', category: 'كورتيكوستيرويدات' }
+            ];
+            
+            DB.externalData.medicationUsage = medications.map(med => {
+                return {
+                    name: med.name,
+                    category: med.category,
+                    prescriptionCount: Math.floor(Math.random() * 100) + 10,
+                    stockLevel: Math.floor(Math.random() * 50),
+                    unitPrice: Math.floor(Math.random() * 100) + 10
+                };
+            });
+        }
+
+        // وظائف تصدير البيانات
+        function previewExportData() {
+            const exportFormat = document.getElementById('export-format').value;
+            const selectedDataTypes = getSelectedDataTypes();
+            
+            if (selectedDataTypes.length === 0) {
+                alert('يرجى اختيار نوع البيانات للتصدير');
+                return;
+            }
+            
+            const exportData = prepareExportData(selectedDataTypes);
+            const formattedData = formatExportData(exportData, exportFormat);
+            
+            // عرض معاينة البيانات
+            document.getElementById('export-preview-content').textContent = formattedData;
+            document.getElementById('export-preview').classList.remove('hidden');
+        }
+
+        function exportData() {
+            const exportFormat = document.getElementById('export-format').value;
+            const selectedDataTypes = getSelectedDataTypes();
+            
+            if (selectedDataTypes.length === 0) {
+                alert('يرجى اختيار نوع البيانات للتصدير');
+                return;
+            }
+            
+            const exportData = prepareExportData(selectedDataTypes);
+            const formattedData = formatExportData(exportData, exportFormat);
+            
+            // إخفاء قسم المعاينة إذا كان ظاهراً
+            document.getElementById('export-preview').classList.add('hidden');
+            
+            // عرض قسم نتيجة التصدير
+            document.getElementById('export-result').classList.remove('hidden');
+            document.getElementById('export-success').classList.remove('hidden');
+            document.getElementById('export-data-content').classList.add('hidden');
+            
+            // تخزين البيانات المصدرة لعرضها لاحقاً
+            document.getElementById('final-export-content').textContent = formattedData;
+        }
+
+        function getSelectedDataTypes() {
+            const selectedTypes = [];
+            document.querySelectorAll('.export-checkbox:checked').forEach(checkbox => {
+                selectedTypes.push(checkbox.id.replace('export-', ''));
+            });
+            return selectedTypes;
+        }
+
+        function prepareExportData(dataTypes) {
+            const result = {};
+            
+            if (dataTypes.includes('appointments')) {
+                // إضافة معلومات المريض والطبيب لكل موعد
+                result.appointments = DB.appointments.map(appointment => {
+                    const patient = getPatientById(appointment.patientId);
+                    const doctor = getDoctorById(appointment.doctorId);
+                    
+                    return {
+                        ...appointment,
+                        patientName: patient ? patient.name : 'غير معروف',
+                        doctorName: doctor ? doctor.name : 'غير معروف'
+                    };
+                });
+            }
+            
+            if (dataTypes.includes('patients')) {
+                result.patients = DB.patients;
+            }
+            
+            if (dataTypes.includes('doctors')) {
+                result.doctors = DB.doctors;
+            }
+            
+            if (dataTypes.includes('reports')) {
+                // تجميع بيانات التقارير الداخلية والخارجية
+                result.reports = {
+                    internal: {
+                        appointmentsSummary: {
+                            total: DB.appointments.length,
+                            completed: DB.appointments.filter(a => a.status === 'completed').length,
+                            pending: DB.appointments.filter(a => a.status === 'pending').length,
+                            cancelled: DB.appointments.filter(a => a.status === 'cancelled').length
+                        },
+                        patientStats: {
+                            total: DB.patients.length,
+                            gender: {
+                                male: DB.patients.filter(p => p.gender === 'male').length,
+                                female: DB.patients.filter(p => p.gender === 'female').length
+                            }
+                        }
+                    },
+                    external: DB.externalData
+                };
+            }
+            
+            return result;
+        }
+
+        function formatExportData(data, format) {
+            switch (format) {
+                case 'json':
+                    return JSON.stringify(data, null, 2);
+                    
+                case 'csv':
+                    // محاكاة تصدير CSV (تبسيط العملية)
+                    let csv = '';
+                    
+                    // معالجة كل نوع بيانات
+                    Object.keys(data).forEach(dataType => {
+                        if (Array.isArray(data[dataType])) {
+                            csv += `# ${dataType}\n`;
+                            
+                            // إضافة رؤوس الأعمدة
+                            if (data[dataType].length > 0) {
+                                csv += Object.keys(data[dataType][0]).join(',') + '\n';
+                                
+                                // إضافة البيانات
+                                data[dataType].forEach(item => {
+                                    csv += Object.values(item).map(val => {
+                                        if (typeof val === 'object') return JSON.stringify(val);
+                                        return val;
+                                    }).join(',') + '\n';
+                                });
+                            }
+                            
+                            csv += '\n';
+                        } else {
+                            csv += `# ${dataType}\n`;
+                            csv += JSON.stringify(data[dataType], null, 2);
+                            csv += '\n\n';
+                        }
+                    });
+                    
+                    return csv;
+                    
+                case 'excel':
+                    // محاكاة تصدير Excel (في الواقع نقدم نفس تنسيق CSV)
+                    return formatExportData(data, 'csv') + '\n(تنسيق Excel محاكى بواسطة CSV)';
+                    
+                case 'pdf':
+                    // محاكاة تصدير PDF
+                    return JSON.stringify(data, null, 2) + '\n\n(تنسيق PDF محاكى بواسطة JSON)';
+                    
+                default:
+                    return JSON.stringify(data);
+            }
+        }
+
+        // وظائف تسجيل الدخول/الخروج
+        function showLoginModal() {
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('user-menu').classList.add('hidden');
+            document.getElementById('login-modal').classList.remove('hidden');
+        }
+
+        function login() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            
+            if (!username || !password) {
+                document.getElementById('login-error').textContent = 'يرجى إدخال اسم المستخدم وكلمة المرور';
+                document.getElementById('login-error').classList.remove('hidden');
+                return;
+            }
+            
+            const user = DB.users.find(u => u.username === username && u.password === password);
+            
+            if (!user) {
+                document.getElementById('login-error').textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+                document.getElementById('login-error').classList.remove('hidden');
+                return;
+            }
+            
+            if (user.status !== 'active') {
+                document.getElementById('login-error').textContent = 'هذا الحساب غير نشط. يرجى التواصل مع المسؤول';
+                document.getElementById('login-error').classList.remove('hidden');
+                return;
+            }
+            
+            // تعيين المستخدم الحالي
+            currentUser = user;
+            
+            // إغلاق نافذة تسجيل الدخول
+            document.getElementById('login-modal').classList.add('hidden');
+            
+            // تحديث واجهة المستخدم
+            updateUserMenu();
+            updateSidebar();
+            
+            // عرض لوحة التحكم بعد تسجيل الدخول
+            showSection('dashboard');
+        }
+
+        function logout() {
+            currentUser = null;
+            updateUserMenu();
+            updateSidebar();
+            
+            // إخفاء القائمة المنسدلة بعد تسجيل الخروج
+            document.getElementById('user-menu').classList.add('hidden');
+            
+            // عرض قسم لوحة التحكم للزائر
+            showSection('dashboard');
+        }
+
+        // إعداد مستمعي الأحداث
+        function setupEventListeners() {
+            // تبديل الوضع المظلم/الفاتح
+            document.getElementById('theme-toggle').addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                const themeIcon = document.getElementById('theme-icon');
+                if (document.documentElement.classList.contains('dark')) {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                }
+            });
+            
+            // زر القائمة للشاشات الصغيرة
+            document.getElementById('mobile-menu-button').addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('hidden');
+            });
+            
+            // القائمة المنسدلة للمستخدم
+            document.getElementById('user-menu-button').addEventListener('click', () => {
+                document.getElementById('user-menu').classList.toggle('hidden');
+            });
+            
+            // إغلاق القائمة المنسدلة عند النقر خارجها
+            document.addEventListener('click', (event) => {
+                const userMenuContainer = document.getElementById('user-menu-container');
+                const userMenu = document.getElementById('user-menu');
+                
+                if (!userMenuContainer.contains(event.target) && !userMenu.classList.contains('hidden')) {
+                    userMenu.classList.add('hidden');
+                }
+            });
+            
+            // مستمعي أحداث القائمة الجانبية
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = item.dataset.section;
+                    showSection(section);
+                });
+            });
+            
+            // مستمعي أحداث نوافذ الإضافة والتعديل
+            document.getElementById('add-appointment-button').addEventListener('click', addAppointment);
+            document.getElementById('close-appointment-modal').addEventListener('click', () => {
+                document.getElementById('appointment-modal').classList.add('hidden');
+            });
+            document.getElementById('save-appointment').addEventListener('click', saveAppointment);
+            
+            document.getElementById('add-patient-button').addEventListener('click', addPatient);
+            document.getElementById('close-patient-modal').addEventListener('click', () => {
+                document.getElementById('patient-modal').classList.add('hidden');
+            });
+            document.getElementById('save-patient').addEventListener('click', savePatient);
+            
+            document.getElementById('add-doctor-button').addEventListener('click', addDoctor);
+            document.getElementById('close-doctor-modal').addEventListener('click', () => {
+                document.getElementById('doctor-modal').classList.add('hidden');
+            });
+            document.getElementById('save-doctor').addEventListener('click', saveDoctor);
+            
+            document.getElementById('add-user-button').addEventListener('click', addUser);
+            document.getElementById('close-user-modal').addEventListener('click', () => {
+                document.getElementById('user-modal').classList.add('hidden');
+            });
+            document.getElementById('save-user').addEventListener('click', saveUser);
+            
+            // مستمعي أحداث تصفية المواعيد
+            document.getElementById('filter-appointments-button').addEventListener('click', () => {
+                const date = document.getElementById('filter-date').value;
+                const doctorId = document.getElementById('filter-doctor').value;
+                const status = document.getElementById('filter-status').value;
+                
+                const filters = {};
+                if (date) filters.date = date;
+                if (doctorId) filters.doctorId = parseInt(doctorId);
+                if (status) filters.status = status;
+                
+                updateAppointments(filters);
+            });
+            
+            // مستمعي أحداث البحث في المرضى
+            document.getElementById('search-patients').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.trim().toLowerCase();
+                const patientsTable = document.getElementById('patients-table');
+                
+                // إعادة إظهار جميع الصفوف
+                patientsTable.querySelectorAll('tr').forEach(row => {
+                    row.classList.remove('hidden');
+                });
+                
+                if (searchTerm) {
+                    // إخفاء الصفوف التي لا تتطابق مع البحث
+                    patientsTable.querySelectorAll('tr').forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        let matchFound = false;
+                        
+                        cells.forEach(cell => {
+                            if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                                matchFound = true;
+                            }
+                        });
+                        
+                        if (!matchFound) {
+                            row.classList.add('hidden');
+                        }
+                    });
+                }
+            });
+            
+            // مستمعي أحداث التقارير
+            document.querySelectorAll('.report-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const reportType = button.dataset.report;
+                    generateReport(reportType);
+                });
+            });
+            
+            document.getElementById('close-report').addEventListener('click', () => {
+                document.getElementById('report-result').classList.add('hidden');
+            });
+            
+            // مستمع حدث مزامنة البيانات الخارجية
+            document.getElementById('sync-external-data').addEventListener('click', syncExternalData);
+            document.getElementById('close-sync-modal').addEventListener('click', () => {
+                document.getElementById('sync-modal').classList.add('hidden');
+            });
+            
+            // مستمعي أحداث تصدير البيانات
+            document.getElementById('preview-export-button').addEventListener('click', previewExportData);
+            document.getElementById('export-data-button').addEventListener('click', exportData);
+            
+            document.getElementById('close-preview').addEventListener('click', () => {
+                document.getElementById('export-preview').classList.add('hidden');
+            });
+            
+            document.getElementById('show-export-data').addEventListener('click', () => {
+                document.getElementById('export-success').classList.add('hidden');
+                document.getElementById('export-data-content').classList.remove('hidden');
+            });
+            
+            document.getElementById('close-export-data').addEventListener('click', () => {
+                document.getElementById('export-data-content').classList.add('hidden');
+                document.getElementById('export-result').classList.add('hidden');
+            });
+            
+            // مستمعي أحداث تسجيل الدخول
+            document.getElementById('submit-login').addEventListener('click', login);
+            document.getElementById('close-login-modal').addEventListener('click', () => {
+                document.getElementById('login-modal').classList.add('hidden');
+            });
+            
+            // تسجيل دخول سريع (للعرض فقط)
+            document.querySelectorAll('.quick-login').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.getElementById('login-username').value = button.dataset.username;
+                    document.getElementById('login-password').value = button.dataset.password;
+                    login();
+                });
+            });
+        }
+
+        // تهيئة التطبيق
+        function initApp() {
+            setupEventListeners();
+            updateUserMenu();
+            updateSidebar();
+            showSection('dashboard');
+            
+            // تحديث القوائم المنسدلة
+            updateDoctorDropdowns();
+            updatePatientDropdowns();
+        }
+
+        // بدء التطبيق
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+
+
+</body></html>
