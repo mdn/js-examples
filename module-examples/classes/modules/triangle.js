@@ -7,6 +7,7 @@ class Triangle {
     this.ctx = ctx;
     this.listId = listId;
     this.length = length;
+    // x and y are the coordinates of the bottom left corner of the triangle
     this.x = x;
     this.y = y;
     this.color = color;

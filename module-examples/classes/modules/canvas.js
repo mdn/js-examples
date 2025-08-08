@@ -5,6 +5,8 @@ class Canvas {
     this.parent = parent;
     this.width = width;
     this.height = height;
+
+    
     this.ctx = null;
   }
 
