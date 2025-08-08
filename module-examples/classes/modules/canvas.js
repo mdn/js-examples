@@ -5,8 +5,9 @@ class Canvas {
     this.parent = parent;
     this.width = width;
     this.height = height;
+    //mychanges
+    this.backgroundColor = 'white';
 
-    
     this.ctx = null;
   }
 
